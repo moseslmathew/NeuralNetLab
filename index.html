@@ -194,10 +194,10 @@
       }
 
       /* ─── 04. GLOBAL NAVIGATION (VERTICAL SPINE) ───────────────────────────── */
-      /* ─── 04. GLOBAL NAVIGATION (INNOVATIVE FLOATING DOCK) ───────────────── */
+      /* ─── 04. GLOBAL NAVIGATION (INNOVATIVE CLICKABLE RIBBON) ────────────── */
       .side-nav-panel {
         position: fixed;
-        right: -185px; 
+        right: -240px; /* Fully hidden */
         top: 50%;
         transform: translateY(-50%);
         width: 230px;
@@ -209,38 +209,87 @@
         border-radius: 24px 0 0 24px;
         padding: 25px 5px 25px 20px;
         z-index: 1000;
-        transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+        transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
         display: flex;
         flex-direction: column;
         gap: 6px;
         box-shadow: -15px 0 45px rgba(0, 0, 0, 0.4);
       }
 
-      /* The peek handle */
-      .side-nav-panel::before {
-        content: '';
-        position: absolute;
-        left: -8px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 4px;
-        height: 60px;
-        background: var(--accent-main);
-        border-radius: 4px;
-        box-shadow: 0 0 15px var(--accent-main);
-        transition: all 0.3s ease;
-        opacity: 0.7;
+      .side-nav-panel.open {
+        right: 0;
+        background: rgba(15, 20, 32, 0.98);
+        box-shadow: -30px 0 80px rgba(0, 0, 0, 0.6);
       }
 
-      .side-nav-panel:hover {
-        right: 0;
-        background: rgba(15, 20, 32, 0.96);
+      /* The clickable Ribbon Handle */
+      .nav-ribbon {
+        position: absolute;
+        left: -38px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 38px;
+        height: 125px;
+        background: rgba(255, 255, 255, 0.08); /* Brighter for better visibility */
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-right: none;
+        border-radius: 12px 0 0 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 1001;
       }
       
-      .side-nav-panel:hover::before {
-        opacity: 0;
-        left: 0;
+      .nav-ribbon:hover {
+        background: rgba(255, 255, 255, 0.12);
+        width: 42px;
+        left: -42px;
       }
+      
+      .side-nav-panel.open .nav-ribbon {
+        background: var(--accent-main);
+        color: #000;
+        border-color: transparent;
+      }
+
+      .ribbon-line {
+        width: 2px;
+        height: 30px;
+        background: var(--accent-main);
+        border-radius: 2px;
+        box-shadow: 0 0 10px var(--accent-main);
+        transition: all 0.3s ease;
+      }
+      
+      .side-nav-panel.open .ribbon-line {
+        background: #000;
+        box-shadow: none;
+        height: 15px;
+      }
+
+      .ribbon-text {
+        font-family: var(--font-accent);
+        font-size: 9.5px;
+        font-weight: 900;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        writing-mode: vertical-rl;
+        transform: rotate(180deg);
+        margin-top: 12px;
+        color: var(--accent-main);
+        opacity: 1;
+        text-shadow: 0 0 8px rgba(var(--s2-gold-rgb), 0.3);
+      }
+      
+      .side-nav-panel.open .ribbon-text {
+        color: #000;
+      }
+
 
       .side-nav-header {
         font-family: var(--font-accent);
@@ -1837,48 +1886,52 @@
         gap: 12px;
       }
       .s5-pill {
-        padding: 12px 24px 14px;
-        border-radius: 8px;
-        border: 1px solid rgba(255,255,255,0.12);
-        background: rgba(255,255,255,0.05);
-        text-align: center;
-        min-width: 130px;
+        padding: 10px 20px;
+        border-radius: 14px;
+        border: 1px solid rgba(255,255,255,0.08);
+        background: rgba(255,255,255,0.03);
+        text-align: left;
+        min-width: 150px;
         position: relative;
         overflow: hidden;
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
       }
       .s5-pill::before {
         content: '';
         position: absolute;
-        top: 0; left: 0; right: 0;
-        height: 2px;
+        left: 0; top: 0; bottom: 0;
+        width: 3px;
         background: var(--text-gradient);
-        border-radius: 8px 8px 0 0;
+        border-radius: 3px 0 0 3px;
       }
       .light-mode .s5-pill {
-        border-color: rgba(34, 211, 238, 0.25);
-        background: rgba(255,255,255,0.85);
-        box-shadow: 0 4px 20px rgba(0,0,0,0.06), 0 0 0 1px rgba(34,211,238,0.1);
+        background: rgba(255,255,255,0.7);
+        border-color: rgba(0,0,0,0.08);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
       }
       .s5-pill-value {
         font-family: var(--font-heading);
-        font-size: clamp(28px, 3.5vw, 48px);
+        font-size: clamp(24px, 3vw, 36px);
         font-weight: 800;
         font-style: italic;
         background: var(--text-gradient);
         -webkit-background-clip: text;
         background-clip: text;
         -webkit-text-fill-color: transparent;
-        line-height: 1.1;
+        line-height: 1;
       }
       .s5-pill-label {
-        font-family: var(--font-body);
-        font-size: 11px;
-        color: rgba(255,255,255,0.45);
-        letter-spacing: 0.5px;
-        margin-top: 2px;
+        font-family: var(--font-accent);
+        font-size: 8.5px;
+        font-weight: 700;
+        color: rgba(255,255,255,0.4);
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-top: 5px;
       }
       .light-mode .s5-pill-label { color: rgba(0,0,0,0.45); }
 
@@ -1910,35 +1963,56 @@
         align-items: stretch;
       }
 
-      /* Left column: neuron diagram */
-      .s5-neuron-col {
+      .s5-neuron-col, .s5-brain-col {
         flex: 1;
         display: flex;
         flex-direction: column;
-        gap: 14px;
+        gap: 16px;
         min-height: 0;
       }
-      .s5-img-frame {
+      
+      .s5-col-header {
+        font-family: var(--font-accent);
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--accent-main);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 2px;
+      }
+      .s5-col-header::after {
+        content: '';
         flex: 1;
-        border-radius: 10px;
+        height: 1px;
+        background: linear-gradient(to right, rgba(var(--s2-gold-rgb), 0.3), transparent);
+      }
+      .s5-img-frame, .s5-brain-card {
+        width: 100%;
+        aspect-ratio: 1.5;
+        border-radius: 16px;
         overflow: hidden;
         border: 1px solid rgba(255,255,255,0.1);
-        background: rgba(255,255,255,0.04);
+        background: rgba(255,255,255,0.03);
         display: flex;
         align-items: center;
         justify-content: center;
         position: relative;
-        min-height: 0;
+        box-shadow: 0 15px 45px rgba(0,0,0,0.25);
       }
-      .light-mode .s5-img-frame {
-        border-color: rgba(0,0,0,0.1);
-        background: #fff;
-      }
-      .s5-img-frame img {
+      .s5-img-frame img, .s5-brain-card img {
         width: 100%;
         height: 100%;
         object-fit: contain;
-        padding: 12px;
+        padding: 0;
+      }
+      .s5-img-frame {
+        background: #fff;
+      }
+      .s5-brain-card {
+        background: #060a18;
       }
       .s5-img-caption {
         font-family: var(--font-accent);
@@ -1990,44 +2064,7 @@
       }
       .light-mode .s5-insight-text { color: rgba(0,0,0,0.55); }
 
-      /* Right column: brain images + insight */
-      .s5-brain-col {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 14px;
-        min-height: 0;
-      }
-      .s5-brain-card {
-        border-radius: 10px;
-        overflow: hidden;
-        border: 1px solid rgba(255,255,255,0.1);
-        position: relative;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-      }
-      .s5-brain-card::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(to top, rgba(7,16,31,0.55) 0%, transparent 50%);
-        pointer-events: none;
-        border-radius: 10px;
-      }
-      .light-mode .s5-brain-card::after {
-        background: linear-gradient(to top, rgba(0,0,0,0.18) 0%, transparent 50%);
-      }
-      .s5-brain-single {
-        flex: 1;
-        min-height: 0;
-      }
-      .light-mode .s5-brain-card { border-color: rgba(0,0,0,0.12); }
-      .s5-brain-card img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        display: block;
-        padding: 5px;
-      }
+
 
       /* Neuron frame: white bg in both modes for diagram clarity */
       .light-mode .s5-img-frame {
@@ -3562,6 +3599,10 @@
 
 
     <nav class="side-nav-panel" id="sideNav">
+      <div class="nav-ribbon" id="navRibbon" onclick="toggleSideNav(event)">
+        <div class="ribbon-line"></div>
+        <div class="ribbon-text">Quick Nav</div>
+      </div>
 
       <div class="side-nav-header">Jump To Slide</div>
       
@@ -4003,38 +4044,36 @@
 
           <!-- Two-column visual area -->
           <div class="s5-visual-row">
-            <!-- Left: neuron diagram -->
+            
+            <!-- Left Component: Micro -->
             <div class="s5-neuron-col">
+              <div class="s5-col-header">Micro: The Cell</div>
               <div class="s5-img-frame">
                 <img src="assets/neuron_diagram.png" alt="Biological neuron diagram" />
               </div>
-              <div class="s5-img-caption">
-                <span class="cap-primary">THE NEURON</span>
-                <span class="cap-dim"> — Your brain's building block</span>
-              </div>
               <div class="s5-insight-card">
-                <span class="s5-insight-icon">⚡</span>
-                <p class="s5-insight-text">Think of it like a tiny switch. Signals come in — if enough arrive, it turns on and passes a signal forward.</p>
+                <div class="s5-insight-icon">⚡</div>
+                <p class="s5-insight-text">A tiny biological switch. Signals enter via dendrites, and if the electrical pulse is strong enough, the neuron "fires" an output.</p>
               </div>
             </div>
 
-            <!-- Right: brain visualization -->
+            <!-- Right Component: Macro -->
             <div class="s5-brain-col">
-              <div class="s5-brain-card s5-brain-single">
+              <div class="s5-col-header">Macro: The Architecture</div>
+              <div class="s5-brain-card">
                 <img src="assets/brain_network.png" alt="Neural network visualization" />
               </div>
               <div class="s5-insight-card">
-                <span class="s5-insight-icon">🧠</span>
-                <p class="s5-insight-text">Intelligence isn't in one neuron. It's in the patterns — millions of neurons firing together to say 'that's a car.'</p>
+                <div class="s5-insight-icon">🧠</div>
+                <p class="s5-insight-text">Intelligence emerges from the <strong>network</strong> — billions of neurons forming 100 trillion connections to process reality.</p>
               </div>
             </div>
+
           </div>
 
           <!-- Bottom accent bar -->
           <div class="s5-accent-bar"></div>
         </div>
-      </section>
-
       </section>
 
       <!-- SLIDE 06: ITERATIVE LEARNING (HOW AI TRAINS) -->
@@ -5793,6 +5832,19 @@
           nextBtn.textContent = "Next Step →";
         }
       }
+
+      function toggleSideNav(e) {
+        if (e) e.stopPropagation();
+        document.getElementById("sideNav").classList.toggle("open");
+      }
+
+      // Close if clicking outside
+      document.addEventListener("click", (e) => {
+        const nav = document.getElementById("sideNav");
+        if (nav && nav.classList.contains("open") && !nav.contains(e.target)) {
+          nav.classList.remove("open");
+        }
+      });
 
       // Initialise accent vars on load (light mode default)
       applyAccentVars();
