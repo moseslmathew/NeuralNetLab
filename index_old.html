@@ -2452,12 +2452,11 @@
         justify-content: center; 
         font-size: 20px; 
         opacity: 0; 
-        width: 60px;
-        flex-shrink: 0;
+        width: 0;
         overflow: hidden;
         transition: all 0.7s ease;
       }
-      .slide-six.phase-ai .s6-approx { opacity: 0.5; }
+      .slide-six.phase-ai .s6-approx { width: 60px; opacity: 0.5; }
 
       .s6-rows-container {
         display: flex;
@@ -2546,23 +2545,24 @@
       .light-mode .s6-card-desc { color: rgba(0, 0, 0, 0.5); }
 
       .s6-connector {
-        width: 60px;
+        width: 0;
         height: 36px;
         display: flex;
         align-items: center;
         justify-content: center;
         color: var(--accent-main);
-        flex-shrink: 0;
+        justify-self: center;
+        align-self: center;
         opacity: 0;
         transform: scale(0) rotate(-45deg);
         overflow: hidden;
         transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
       }
       .slide-six.phase-ai .s6-connector {
-        opacity: 0; /* Still hidden until .active added */
+        width: 60px;
       }
       .slide-six .s6-connector.active { opacity: 1; transform: scale(1) rotate(0deg); }
-      .s6-connector svg { width: 22px; height: 22px; }
+      .s6-connector svg { width: 20px; height: 20px; }
 
       /* Color variants for rows */
       .s6-row-1 .s6-card { border-left-color: #a855f7; }
@@ -2626,10 +2626,6 @@
       }
       .s6-btn:active:not(:disabled) { transform: translateY(0); }
       .s6-btn:disabled { opacity: 0.2; cursor: not-allowed; }
-      .light-mode .s6-btn {
-        background: rgba(0, 0, 0, 0.03);
-        border-color: rgba(0, 0, 0, 0.1);
-      }
       .light-mode .s6-btn {
         background: rgba(0, 0, 0, 0.03);
         border-color: rgba(0, 0, 0, 0.1);
@@ -3534,93 +3530,6 @@
         font-size: 16px;
         line-height: 1;
       }
-
-      /* ─── SLIDE 07: ANN ARCHITECTURE ───────────────────────────────────────── */
-      .slide-seven {
-        background: var(--s2-bg);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
-        padding: clamp(28px, 4vh, 50px) clamp(24px, 4vw, 60px) 20px;
-        gap: 0;
-        overflow: hidden;
-      }
-
-      .s7-header {
-        text-align: center;
-        flex-shrink: 0;
-        margin-bottom: 6px;
-      }
-      .s7-kicker {
-        font-family: var(--font-accent);
-        font-size: 10px;
-        letter-spacing: 3px;
-        text-transform: uppercase;
-        color: var(--accent-main);
-        opacity: 0.8;
-        display: block;
-        margin-bottom: 8px;
-      }
-      .s7-title {
-        font-family: var(--font-heading);
-        font-size: clamp(22px, 3.2vw, 40px);
-        font-weight: 800;
-        color: var(--s2-text);
-        letter-spacing: -0.5px;
-        margin: 0 0 6px;
-      }
-      .s7-subtitle {
-        font-family: var(--font-body);
-        font-size: clamp(12px, 1.3vw, 15px);
-        color: rgba(var(--s2-gold-rgb), 0.7);
-        margin: 0;
-      }
-      .light-mode .s7-subtitle { color: rgba(0,0,0,0.45); }
-
-      .s7-canvas-wrap {
-        flex: 1;
-        width: 100%;
-        min-height: 0;
-        position: relative;
-      }
-      #annCanvas {
-        width: 100%;
-        height: 100%;
-        display: block;
-      }
-
-      .s7-controls {
-        flex-shrink: 0;
-        display: flex;
-        gap: 12px;
-        padding: 10px 0 4px;
-        align-items: center;
-      }
-      .s7-btn {
-        padding: 8px 20px;
-        border-radius: 24px;
-        border: 1px solid rgba(var(--s2-gold-rgb), 0.3);
-        background: rgba(var(--s2-gold-rgb), 0.08);
-        color: var(--accent-main);
-        font-family: var(--font-body);
-        font-size: 12px;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        cursor: pointer;
-        transition: all 0.25s ease;
-      }
-      .s7-btn:hover {
-        background: rgba(var(--s2-gold-rgb), 0.18);
-        border-color: rgba(var(--s2-gold-rgb), 0.6);
-        transform: translateY(-1px);
-      }
-      .s7-btn.active {
-        background: var(--accent-main);
-        color: #000;
-        border-color: var(--accent-main);
-      }
-      .light-mode .s7-btn { color: var(--accent-main); }
     </style>
   </head>
   <body class="light-mode">
@@ -3725,11 +3634,6 @@
       <div class="nav-item" onclick="goToSlide(5)">
         <div class="nav-dot"></div>
         <span class="nav-label">06. Iterative Learning</span>
-      </div>
-
-      <div class="nav-item" onclick="goToSlide(6)">
-        <div class="nav-dot"></div>
-        <span class="nav-label">07. ANN Architecture</span>
       </div>
     </nav>
 
@@ -4282,22 +4186,6 @@
           <button class="s6-btn" id="s6-next" onclick="s6Step(1)">Next Step →</button>
         </div>
       </section>
-
-      <!-- SLIDE 07: ANN ARCHITECTURE -->
-      <section class="slide-seven" id="slideSeven">
-        <div class="s7-header">
-          <span class="s7-kicker">Network Architecture</span>
-          <h2 class="s7-title">What Does an ANN Actually Look Like?</h2>
-          <p class="s7-subtitle">Neurons arranged in layers — each connected by a learned weight</p>
-        </div>
-        <div class="s7-canvas-wrap">
-          <canvas id="annCanvas"></canvas>
-        </div>
-        <div class="s7-controls">
-          <button class="s7-btn" id="s7RunBtn" onclick="s7RunForwardPass()">▶ Run Forward Pass</button>
-          <button class="s7-btn" id="s7WeightBtn" onclick="s7ToggleWeights()">Show Weights</button>
-        </div>
-      </section>
     </div>
 
     <!-- ── 11. MODAL COMPONENTS ────────────────────────────────────────────────── -->
@@ -4792,11 +4680,11 @@
       function drawBall() {
         if (!ballNodes.length) initBall();
         const cx = BW / 2, cy = BH * 0.45; // Centered slightly higher behind text
-        const rotX = bt * 0.0018, rotY = bt * 0.0025; // Much slower rotation
+        const rotX = bt * 0.005, rotY = bt * 0.008;
         
-        // Subtler, more organic breathing logic
-        const baseRadius = Math.min(BW, BH) * 0.34;
-        const pulse = 0.92 + Math.sin(bt * 0.006) * 0.08; // Subtle 8% breath
+        // Shrink-pulse logic
+        const baseRadius = Math.min(BW, BH) * 0.32;
+        const pulse = 0.7 + Math.sin(bt * 0.015) * 0.3; // Shrinks to 70%, grows to 100%
         const radius = baseRadius * pulse;
         
         const projected = ballNodes.map(n => {
@@ -4821,21 +4709,21 @@
         });
 
         // Depth sort for lines (simplified: only draw if dist is small)
-        bx.lineWidth = 0.6;
+        bx.lineWidth = 0.5;
         for (let i = 0; i < projected.length; i++) {
           const p1 = projected[i];
-          if (p1.z > radius * 0.2) continue; // Skip far back
+          if (p1.z > 0) continue; // Skip far back for performance spike
           
-          for (let j = i + 1; j < projected.length; j += 4) {
+          for (let j = i + 1; j < projected.length; j += 4) { // Only connect some for "unstructured" feel
             const p2 = projected[j];
             const distSq = Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2);
-            if (distSq > (9000 * p1.scale)) continue;
+            if (distSq > (8000 * p1.scale)) continue;
             
-            const alpha = (1 - distSq / (9000 * p1.scale)) * 0.4;
+            const alpha = (1 - distSq / (8000 * p1.scale)) * 0.35;
             bx.beginPath();
             bx.moveTo(p1.x, p1.y);
             bx.lineTo(p2.x, p2.y);
-            bx.strokeStyle = isLightMode ? `rgba(3,105,161,${alpha * 0.32})` : `rgba(34,211,238,${alpha * 0.45})`;
+            bx.strokeStyle = isLightMode ? `rgba(3,105,161,${alpha * 0.4})` : `rgba(34,211,238,${alpha * 0.5})`;
             bx.stroke();
           }
         }
@@ -5945,8 +5833,6 @@
         }
       }
 
-
-
       function toggleSideNav(e) {
         if (e) e.stopPropagation();
         document.getElementById("sideNav").classList.toggle("open");
@@ -5962,410 +5848,6 @@
 
       // Initialise accent vars on load (light mode default)
       applyAccentVars();
-    </script>
-
-    <!-- ── SLIDE 07: ANN CANVAS SCRIPT ──────────────────────────────────────── -->
-    <script>
-    (function () {
-      const canvas  = document.getElementById("annCanvas");
-      const ctx     = canvas.getContext("2d");
-
-      /* ── Network definition ── */
-      const LAYERS = [
-        { label: "Input",    n: 5, color: "#7c3aed", glow: "rgba(124,58,237,0.55)" },
-        { label: "Hidden 1", n: 6, color: "#3b82f6", glow: "rgba(59,130,246,0.55)" },
-        { label: "Hidden 2", n: 5, color: "#06b6d4", glow: "rgba(6,182,212,0.55)"  },
-        { label: "Output",   n: 3, color: "#f43f5e", glow: "rgba(244,63,94,0.55)"  },
-      ];
-      const INPUT_VALS  = [1.00, 1.00, 1.00, 1.00, 1.00];
-      const OUTPUT_VALS = [0.58, 0.44, 0.71];
-
-      /* Pre-generate stable weights (seeded with sin for reproducibility) */
-      function fakeWeight(li, ni, nj) {
-        const v = Math.sin(li * 47 + ni * 13 + nj * 7) * 0.97;
-        return +v.toFixed(2);
-      }
-
-      let showWeights = false;
-      let animating   = false;
-      let neurons     = [];   // [{x,y,layer}]
-      let edges       = [];   // [{x1,y1,x2,y2,w,alpha}]
-      let signals     = [];   // active forward-pass particles
-
-      /* ── Resize canvas to its CSS size ── */
-      function resize() {
-        const wrap = canvas.parentElement;
-        const W = wrap.clientWidth;
-        const H = wrap.clientHeight;
-        if (!W || !H) return;
-        const dpr = window.devicePixelRatio || 1;
-        canvas.width  = W * dpr;
-        canvas.height = H * dpr;
-        canvas.style.width  = W + "px";
-        canvas.style.height = H + "px";
-        ctx.setTransform(1, 0, 0, 1, 0, 0); // reset before re-scaling
-        ctx.scale(dpr, dpr);
-        buildLayout();
-        draw();
-      }
-
-      function buildLayout() {
-        const W = canvas.clientWidth  || canvas.width  / (window.devicePixelRatio || 1);
-        const H = canvas.clientHeight || canvas.height / (window.devicePixelRatio || 1);
-        const isLight = document.body.classList.contains("light-mode");
-
-        neurons = [];
-        edges   = [];
-
-        const padX  = W * 0.10;
-        const padY  = H * 0.17;           // leave room for layer labels
-        const usableW = W - padX * 2;
-        const usableH = H - padY - H * 0.06;
-
-        LAYERS.forEach((layer, li) => {
-          const x = padX + (li / (LAYERS.length - 1)) * usableW;
-          for (let ni = 0; ni < layer.n; ni++) {
-            const y = padY + (ni / (layer.n - 1 || 1)) * usableH;
-            neurons.push({ x, y, layer: li, idx: ni });
-          }
-        });
-
-        // Build edges between adjacent layers
-        for (let li = 0; li < LAYERS.length - 1; li++) {
-          const fromNeurons = neurons.filter(n => n.layer === li);
-          const toNeurons   = neurons.filter(n => n.layer === li + 1);
-          fromNeurons.forEach(from => {
-            toNeurons.forEach(to => {
-              edges.push({
-                x1: from.x, y1: from.y,
-                x2: to.x,   y2: to.y,
-                w:  fakeWeight(li, from.idx, to.idx),
-                alpha: 1
-              });
-            });
-          });
-        }
-      }
-
-      /* ── Drawing helpers ── */
-      function drawEdges(activeLayer = -1) {
-        const isLight = document.body.classList.contains("light-mode");
-        edges.forEach(e => {
-          const srcLayer = neurons.find(n => n.x === e.x1 && n.y === e.y1)?.layer ?? -1;
-          const lit = activeLayer >= 0 && srcLayer === activeLayer;
-          const baseAlpha = isLight ? 0.18 : 0.22;
-          ctx.beginPath();
-          ctx.moveTo(e.x1, e.y1);
-          ctx.lineTo(e.x2, e.y2);
-          ctx.strokeStyle = lit
-            ? `rgba(${hexToRgb(LAYERS[srcLayer].color)},0.75)`
-            : (isLight ? `rgba(60,80,120,${baseAlpha})` : `rgba(150,170,220,${baseAlpha})`);
-          ctx.lineWidth = lit ? 1.4 : 0.8;
-          ctx.stroke();
-
-          if (showWeights) {
-            const mx = (e.x1 + e.x2) / 2;
-            const my = (e.y1 + e.y2) / 2;
-            const sign = e.w >= 0 ? "+" : "";
-            const label = sign + e.w.toFixed(2);
-            const positive = e.w >= 0;
-            const pill = isLight
-              ? (positive ? "rgba(6,182,212,0.15)" : "rgba(244,63,94,0.15)")
-              : (positive ? "rgba(6,182,212,0.18)" : "rgba(244,63,94,0.18)");
-            const textCol = isLight
-              ? (positive ? "#0369a1" : "#be123c")
-              : (positive ? "#67e8f9" : "#fda4af");
-
-            ctx.font = "bold 8px system-ui";
-            const tw = ctx.measureText(label).width;
-            const ph = 11, pw = tw + 8;
-            ctx.fillStyle = pill;
-            roundRect(ctx, mx - pw/2, my - ph/2, pw, ph, 4);
-            ctx.fill();
-            ctx.fillStyle = textCol;
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            ctx.fillText(label, mx, my);
-          }
-        });
-      }
-
-      function drawNeurons(activeLayer = -1) {
-        const isLight = document.body.classList.contains("light-mode");
-        const R = Math.max(10, Math.min(20, (canvas.clientWidth || canvas.width / (window.devicePixelRatio||1)) * 0.018));
-        neurons.forEach(n => {
-          const layer = LAYERS[n.layer];
-          const lit   = activeLayer >= 0 && n.layer === activeLayer;
-
-          // Glow
-          if (lit || !isLight) {
-            const grd = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, R * (lit ? 3.5 : 2.2));
-            grd.addColorStop(0, lit ? layer.glow.replace("0.55", "0.7") : layer.glow);
-            grd.addColorStop(1, "transparent");
-            ctx.beginPath();
-            ctx.arc(n.x, n.y, R * (lit ? 3.5 : 2.2), 0, Math.PI * 2);
-            ctx.fillStyle = grd;
-            ctx.fill();
-          }
-
-          // Outer ring
-          ctx.beginPath();
-          ctx.arc(n.x, n.y, R, 0, Math.PI * 2);
-          ctx.strokeStyle = lit ? layer.color : (isLight ? layer.color + "99" : layer.color + "cc");
-          ctx.lineWidth = lit ? 2.5 : 1.5;
-          ctx.stroke();
-
-          // Inner fill
-          const inner = ctx.createRadialGradient(n.x - R*0.25, n.y - R*0.25, 0, n.x, n.y, R);
-          const c = hexToRgb(layer.color);
-          inner.addColorStop(0, `rgba(${c},${isLight ? 0.25 : 0.35})`);
-          inner.addColorStop(1, `rgba(${c},${isLight ? 0.08 : 0.12})`);
-          ctx.beginPath();
-          ctx.arc(n.x, n.y, R - 1, 0, Math.PI * 2);
-          ctx.fillStyle = inner;
-          ctx.fill();
-        });
-      }
-
-      function drawLayerLabels() {
-        const isLight = document.body.classList.contains("light-mode");
-        const W = canvas.clientWidth  || canvas.width  / (window.devicePixelRatio || 1);
-        const H = canvas.clientHeight || canvas.height / (window.devicePixelRatio || 1);
-        const padX = W * 0.10;
-        const usableW = W - padX * 2;
-
-        LAYERS.forEach((layer, li) => {
-          const x = padX + (li / (LAYERS.length - 1)) * usableW;
-          const label = layer.label;
-          ctx.font = "bold 11px system-ui";
-          const tw = ctx.measureText(label).width;
-          const ph = 20, pw = tw + 20;
-          const py = 14;
-
-          // Pill background
-          const c = hexToRgb(layer.color);
-          ctx.fillStyle = `rgba(${c},${isLight ? 0.12 : 0.15})`;
-          roundRect(ctx, x - pw/2, py, pw, ph, 10);
-          ctx.fill();
-
-          // Pill border
-          ctx.strokeStyle = `rgba(${c},${isLight ? 0.45 : 0.55})`;
-          ctx.lineWidth = 1;
-          roundRect(ctx, x - pw/2, py, pw, ph, 10);
-          ctx.stroke();
-
-          // Text
-          ctx.fillStyle = layer.color;
-          ctx.textAlign = "center";
-          ctx.textBaseline = "middle";
-          ctx.fillText(label, x, py + ph / 2);
-
-          // Dashed vertical line from pill to first neuron
-          const layerNeurons = neurons.filter(n => n.layer === li);
-          if (layerNeurons.length) {
-            const topY = Math.min(...layerNeurons.map(n => n.y));
-            ctx.setLineDash([3, 4]);
-            ctx.strokeStyle = `rgba(${c},0.2)`;
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(x, py + ph);
-            ctx.lineTo(x, topY - 18);
-            ctx.stroke();
-            ctx.setLineDash([]);
-          }
-        });
-      }
-
-      function drawInputOutputValues() {
-        const isLight = document.body.classList.contains("light-mode");
-        const R = Math.max(10, Math.min(20, (canvas.clientWidth || canvas.width / (window.devicePixelRatio||1)) * 0.018));
-
-        // Inputs
-        const inputNeurons = neurons.filter(n => n.layer === 0);
-        inputNeurons.forEach((n, i) => {
-          if (i >= INPUT_VALS.length) return;
-          const val = INPUT_VALS[i].toFixed(2);
-          drawValueBox(n.x - R - 46, n.y, val, "#7c3aed", isLight);
-        });
-
-        // Outputs
-        const outputNeurons = neurons.filter(n => n.layer === LAYERS.length - 1);
-        outputNeurons.forEach((n, i) => {
-          if (i >= OUTPUT_VALS.length) return;
-          const val = OUTPUT_VALS[i].toFixed(2);
-          drawValueBox(n.x + R + 6, n.y, val, "#f43f5e", isLight);
-        });
-      }
-
-      function drawValueBox(x, y, val, color, isLight) {
-        const W = 38, H2 = 18;
-        const c = hexToRgb(color);
-        ctx.fillStyle = `rgba(${c},${isLight ? 0.12 : 0.18})`;
-        roundRect(ctx, x, y - H2/2, W, H2, 5);
-        ctx.fill();
-        ctx.strokeStyle = `rgba(${c},${isLight ? 0.45 : 0.55})`;
-        ctx.lineWidth = 1;
-        roundRect(ctx, x, y - H2/2, W, H2, 5);
-        ctx.stroke();
-        ctx.fillStyle = color;
-        ctx.font = "bold 9px monospace";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(val, x + W/2, y);
-      }
-
-      function drawSignals() {
-        signals.forEach(s => {
-          const c = hexToRgb(LAYERS[s.fromLayer].color);
-          const grd = ctx.createRadialGradient(s.cx, s.cy, 0, s.cx, s.cy, 6);
-          grd.addColorStop(0, `rgba(${c},0.95)`);
-          grd.addColorStop(0.4, `rgba(${c},0.6)`);
-          grd.addColorStop(1, "transparent");
-          ctx.beginPath();
-          ctx.arc(s.cx, s.cy, 6, 0, Math.PI * 2);
-          ctx.fillStyle = grd;
-          ctx.fill();
-        });
-      }
-
-      function draw(activeLayer = -1) {
-        const W = canvas.clientWidth  || canvas.width  / (window.devicePixelRatio || 1);
-        const H = canvas.clientHeight || canvas.height / (window.devicePixelRatio || 1);
-        ctx.clearRect(0, 0, W, H);
-        drawEdges(activeLayer);
-        drawNeurons(activeLayer);
-        drawLayerLabels();
-        drawInputOutputValues();
-        drawSignals();
-      }
-
-      /* ── Forward-pass animation ── */
-      function s7RunForwardPass() {
-        if (animating) return;
-        animating = true;
-        signals = [];
-        const btn = document.getElementById("s7RunBtn");
-        btn.textContent = "⏳ Running…";
-        btn.disabled = true;
-
-        let layerIdx = 0;
-
-        function animateLayer() {
-          if (layerIdx >= LAYERS.length) {
-            animating = false;
-            btn.textContent = "▶ Run Forward Pass";
-            btn.disabled = false;
-            draw(-1);
-            return;
-          }
-
-          draw(layerIdx);
-
-          // Spawn particles on edges FROM this layer
-          if (layerIdx < LAYERS.length - 1) {
-            const fromNeurons = neurons.filter(n => n.layer === layerIdx);
-            const toNeurons   = neurons.filter(n => n.layer === layerIdx + 1);
-            fromNeurons.forEach(from => {
-              toNeurons.forEach(to => {
-                signals.push({ x1: from.x, y1: from.y, x2: to.x, y2: to.y, t: 0, fromLayer: layerIdx, cx: from.x, cy: from.y });
-              });
-            });
-          }
-
-          let progress = 0;
-          const duration = 480;
-          const start = performance.now();
-
-          function step(now) {
-            progress = Math.min((now - start) / duration, 1);
-            const ease = 1 - Math.pow(1 - progress, 3);
-            signals.forEach(s => {
-              if (s.fromLayer === layerIdx) {
-                s.cx = s.x1 + (s.x2 - s.x1) * ease;
-                s.cy = s.y1 + (s.y2 - s.y1) * ease;
-              }
-            });
-            draw(layerIdx);
-            if (progress < 1) {
-              requestAnimationFrame(step);
-            } else {
-              signals = signals.filter(s => s.fromLayer !== layerIdx);
-              layerIdx++;
-              setTimeout(animateLayer, 120);
-            }
-          }
-          requestAnimationFrame(step);
-        }
-
-        animateLayer();
-      }
-
-      function s7ToggleWeights() {
-        showWeights = !showWeights;
-        const btn = document.getElementById("s7WeightBtn");
-        btn.classList.toggle("active", showWeights);
-        btn.textContent = showWeights ? "Hide Weights" : "Show Weights";
-        draw();
-      }
-
-      /* ── Utilities ── */
-      function hexToRgb(hex) {
-        const r = parseInt(hex.slice(1,3),16);
-        const g = parseInt(hex.slice(3,5),16);
-        const b = parseInt(hex.slice(5,7),16);
-        return `${r},${g},${b}`;
-      }
-
-      function roundRect(ctx, x, y, w, h, r) {
-        ctx.beginPath();
-        ctx.moveTo(x + r, y);
-        ctx.lineTo(x + w - r, y);
-        ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-        ctx.lineTo(x + w, y + h - r);
-        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-        ctx.lineTo(x + r, y + h);
-        ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-        ctx.lineTo(x, y + r);
-        ctx.quadraticCurveTo(x, y, x + r, y);
-        ctx.closePath();
-      }
-
-      /* ── Init ── */
-      function tryInit() {
-        const wrap = canvas.parentElement;
-        const W = wrap.clientWidth;
-        const H = wrap.clientHeight;
-        if (W > 0 && H > 0) {
-          resize();
-        } else {
-          requestAnimationFrame(tryInit);
-        }
-      }
-
-      // Trigger redraw whenever slide-seven gets active-slide class
-      const slideEl = document.getElementById("slideSeven");
-      const activeObserver = new MutationObserver(() => {
-        if (slideEl.classList.contains("active-slide")) {
-          // Small delay to let CSS transitions settle
-          setTimeout(resize, 60);
-        }
-      });
-      activeObserver.observe(slideEl, { attributes: true, attributeFilter: ["class"] });
-
-      // Also re-draw when theme changes (light/dark toggle)
-      const themeObserver = new MutationObserver(() => { buildLayout(); draw(); });
-      themeObserver.observe(document.body, { attributes: true, attributeFilter: ["class"] });
-
-      // Window resize
-      window.addEventListener("resize", () => { clearTimeout(window._s7rt); window._s7rt = setTimeout(resize, 80); });
-
-      // Expose globally for buttons
-      window.s7RunForwardPass  = s7RunForwardPass;
-      window.s7ToggleWeights   = s7ToggleWeights;
-
-      // Kick off
-      requestAnimationFrame(tryInit);
-    })();
     </script>
   </body>
 </html>
