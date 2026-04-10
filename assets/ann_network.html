@@ -446,11 +446,11 @@ input[type=range].int-sl::-webkit-slider-thumb{background:#f59e0b}
 
     <!-- Animation -->
     <div class="lp-section-lbl">Animation</div>
-    <div class="lp-row"><span class="lp-tgl-lbl">Vehicle Classification</span><div class="t-track" id="veh-toggle2" onclick="toggleDemo('vehicle');syncToggle('veh-toggle','veh-toggle2')"><div class="t-thumb"></div></div></div>
-    <div class="lp-row"><span class="lp-tgl-lbl">Number Classification</span><div class="t-track" id="mnist-toggle2" onclick="toggleDemo('mnist');syncToggle('mnist-toggle','mnist-toggle2')"><div class="t-thumb"></div></div></div>
-    <div class="lp-row"><span class="lp-tgl-lbl">Dynamic Flow</span><div class="t-track on" id="dyn-toggle2" onclick="toggleDynamic();syncToggle('dyn-toggle','dyn-toggle2')"><div class="t-thumb"></div></div></div>
-    <div class="lp-row"><span class="lp-tgl-lbl">Loop Animation</span><div class="t-track on" id="loop-toggle2" onclick="toggleLoop();syncToggle('loop-toggle','loop-toggle2')"><div class="t-thumb"></div></div></div>
-    <div class="lp-row"><span class="lp-tgl-lbl">Pause Flow</span><div class="t-track" id="pause-toggle2" onclick="togglePause();syncToggle('pause-toggle','pause-toggle2')"><div class="t-thumb"></div></div></div>
+    <div class="lp-row"><span class="lp-tgl-lbl">Vehicle Classification</span><div class="t-track" id="veh-toggle2" onclick="toggleDemo('vehicle')"><div class="t-thumb"></div></div></div>
+    <div class="lp-row"><span class="lp-tgl-lbl">Number Classification</span><div class="t-track" id="mnist-toggle2" onclick="toggleDemo('mnist')"><div class="t-thumb"></div></div></div>
+    <div class="lp-row"><span class="lp-tgl-lbl">Dynamic Flow</span><div class="t-track on" id="dyn-toggle2" onclick="toggleDynamic()"><div class="t-thumb"></div></div></div>
+    <div class="lp-row"><span class="lp-tgl-lbl">Loop Animation</span><div class="t-track on" id="loop-toggle2" onclick="toggleLoop()"><div class="t-thumb"></div></div></div>
+    <div class="lp-row"><span class="lp-tgl-lbl">Pause Flow</span><div class="t-track" id="pause-toggle2" onclick="togglePause()"><div class="t-thumb"></div></div></div>
 
     <div class="lp-row" style="margin-top:6px">
       <span class="lp-lbl">Speed</span>
@@ -719,9 +719,11 @@ function stepSpeed(delta){
   const inp=document.getElementById('sl-speed');
   const next=Math.min(5,Math.max(1,+inp.value+delta));
   inp.value=next;
-  document.getElementById('spv').textContent=next;
-  document.getElementById('sp-minus').style.opacity=next<=1?'.3':'1';
-  document.getElementById('sp-plus').style.opacity=next>=5?'.3':'1';
+  const v1=document.getElementById('spv'), v2=document.getElementById('spv2');
+  if(v1) v1.textContent=next; if(v2) v2.textContent=next;
+  const bm1=document.getElementById('sp-minus'), bp1=document.getElementById('sp-plus');
+  if(bm1) bm1.style.opacity=next<=1?'.3':'1';
+  if(bp1) bp1.style.opacity=next>=5?'.3':'1';
   buildNetwork(true);
 }
 
@@ -738,11 +740,10 @@ function initCounters(){
 
 function togglePause(){
   animPaused=!animPaused;
-  const pt = document.getElementById('pause-toggle');
-  if(pt) pt.classList.toggle('on',animPaused);
+  [document.getElementById('pause-toggle'), document.getElementById('pause-toggle2')].forEach(el=>{ if(el) el.classList.toggle('on',animPaused); });
   
   const svg=document.getElementById('nn-svg');
-  svg.style.animationPlayState=animPaused?'paused':'running';
+  if(!svg) return;
   const anims=svg.querySelectorAll('animate,animateMotion');
   anims.forEach(a=>{try{animPaused?a.pauseAnimations?.():a.unpauseAnimations?.();}catch(e){}});
   try{animPaused?svg.pauseAnimations():svg.unpauseAnimations();}catch(e){}
@@ -817,8 +818,19 @@ function toggleTheme(){
   document.getElementById('theme-icon').textContent=isDark?'☀️':'🌙';
   buildNetwork(true);
 }
-function toggleDynamic(){const t=document.getElementById('dyn-toggle'),on=!t.classList.contains('on');t.classList.toggle('on',on);document.getElementById('dyn-lbl').textContent=on?'Dynamic Flow':'Static Layout';lineMode=on?'dynamic':'static';buildNetwork(true);}
-function toggleLoop(){const t=document.getElementById('loop-toggle');loopAnim=!t.classList.contains('on');t.classList.toggle('on',loopAnim);buildNetwork(true);}
+function toggleDynamic(){
+  const t=document.getElementById('dyn-toggle'), on=!t.classList.contains('on');
+  [document.getElementById('dyn-toggle'), document.getElementById('dyn-toggle2')].forEach(el=>{ if(el) el.classList.toggle('on',on); });
+  document.getElementById('dyn-lbl').textContent=on?'Dynamic Flow':'Static Layout';
+  lineMode=on?'dynamic':'static';
+  buildNetwork(true);
+}
+function toggleLoop(){
+  const t=document.getElementById('loop-toggle'); 
+  loopAnim=!t.classList.contains('on');
+  [document.getElementById('loop-toggle'), document.getElementById('loop-toggle2')].forEach(el=>{ if(el) el.classList.toggle('on',loopAnim); });
+  buildNetwork(true);
+}
 function toggleLabels(){const t=document.getElementById('lbl-toggle');showLabels=!t.classList.contains('on');t.classList.toggle('on',showLabels);buildNetwork(true);}
 function toggleEntrance(){const t=document.getElementById('entrance-toggle');entranceAnim=!t.classList.contains('on');t.classList.toggle('on',entranceAnim);}
 function toggleParticles(){const t=document.getElementById('particle-toggle');const on=!t.classList.contains('on');t.classList.toggle('on',on);if(particleSys)particleSys.enabled=on;}
@@ -858,8 +870,11 @@ function toggleDemo(type){
 
   activeData = (demoType === 'mnist' ? MNIST_DATA : VEHICLE_DATA);
   
-  document.getElementById('veh-toggle')?.classList.toggle('on', demoMode && demoType === 'vehicle');
-  document.getElementById('mnist-toggle')?.classList.toggle('on', demoMode && demoType === 'mnist');
+  const isVeh = demoMode && demoType === 'vehicle';
+  const isMnist = demoMode && demoType === 'mnist';
+  
+  [document.getElementById('veh-toggle'), document.getElementById('veh-toggle2')].forEach(t=>{ if(t) t.classList.toggle('on', isVeh); });
+  [document.getElementById('mnist-toggle'), document.getElementById('mnist-toggle2')].forEach(t=>{ if(t) t.classList.toggle('on', isMnist); });
   
   document.getElementById('arch-section').classList.remove('dim');
   document.getElementById('sl-output').closest('.sl-row').style.opacity=demoMode?'0.35':'1';
@@ -997,14 +1012,14 @@ function drawOutputNode(svg,x,y,act,col,r,arrivals,tc){
     // Stroke width pulse on arrival
     outerNode.appendChild(smil('animate',{attributeName:'stroke-width',values:`2;2;${(2+act*3).toFixed(1)};${(2+act*3).toFixed(1)};2;2`,keyTimes:kt,dur:`${tc}s`,repeatCount:rep,fill:fz,calcMode:'spline',keySplines:sp}));
   }
-  if(arrivals.length>0){
+  if(arrivals.length>0 && !demoMode){
     const pw=34,bg=el('g',{opacity:'0'});
     bg.appendChild(el('rect',{x:x+r+4,y:y-8.5,width:pw,height:17,rx:'6',fill:isDark?'#0f172a':'#fff',stroke:col.stroke,'stroke-width':'1.5'}));
     const bt=el('text',{x:x+r+4+pw/2,y:y+4.5,'text-anchor':'middle','font-family':'JetBrains Mono,monospace','font-size':'10','font-weight':'700',fill:col.text});
     bt.textContent=act.toFixed(2);bg.appendChild(bt);
     const t0=+(arrivals[0].arriveAt/tc).toFixed(7);
-    const tHold=+(Math.min(0.97, t0+(1-t0)*0.70)).toFixed(7);
-    const tFade=+(Math.min(0.99, t0+(1-t0)*0.90)).toFixed(7);
+    const tHold=+(Math.min(0.97, t0+(1-t0)*0.50)).toFixed(7);
+    const tFade=+(Math.min(0.99, t0+(1-t0)*0.82)).toFixed(7);
     const kt=loopAnim?`0;${Math.max(0,t0-.02).toFixed(7)};${t0};${tHold};${tFade};1`:`0;${Math.max(0,t0-.02).toFixed(7)};${t0};1`;
     bg.appendChild(smil('animate',{attributeName:'opacity',values:loopAnim?'0;0;1;1;0;0':'0;0;1;1',keyTimes:kt,dur:`${tc}s`,repeatCount:rep,fill:fz}));
     svg.appendChild(bg);
@@ -1236,7 +1251,6 @@ function drawVehiclePanel(svg,veh,pos,NODE_R,H,tc,nInput,tExt,centerOffset=0){
           const idx=r*COLS+cc;
           let v;
           if(demoType==='mnist'){
-            // Direct lookup — pixels are already 10×10
             const src=veh.samples[veh.currentSample].pixels;
             v=src[r*COLS+cc]??0;
           } else {
@@ -1245,24 +1259,39 @@ function drawVehiclePanel(svg,veh,pos,NODE_R,H,tc,nInput,tExt,centerOffset=0){
           const grey=Math.round(v*255);
           const cx2=gridX+cc*CELL + offsetX, cy2=gridY+r*CELL + offsetY;
 
-          let fillCol = "rgb("+grey+","+grey+","+grey+")";
-          if (colorMode && ch===0) fillCol = "rgba("+grey+",0,0,0.85)";
-          if (colorMode && ch===1) fillCol = "rgba(0,"+grey+",0,0.85)";
-          if (colorMode && ch===2) fillCol = "rgba(0,0,"+grey+",0.85)";
-
-          // No stroke for 28×28 (cells too small), 1px for vehicle grid
-          const cellStroke = demoType==='mnist' ? 'none' : (isDark?'rgba(0,0,0,.6)':'rgba(226,232,240,.9)');
-          g.appendChild(el('rect',{x:cx2,y:cy2,width:CELL+0.5,height:CELL+0.5,
-            fill:fillCol,stroke:cellStroke,'stroke-width':'0.5'}));
-
-          // Only show value text for vehicle grid (MNIST cells too small)
-          if(demoType!=='mnist' && (!colorMode || ch===2)){
-            const bright=v>.5;
-            const tv=el('text',{x:cx2+CELL/2,y:cy2+CELL/2+4,'text-anchor':'middle',
-              'font-family':'JetBrains Mono,monospace','font-size':'10.5','font-weight':'700',
-              fill:bright?'#0f172a':(isDark?'rgba(240,244,255,.9)':'rgba(240,244,255,.9)')});
-            tv.textContent=v.toFixed(2);
+          if(demoType==='mnist'){
+            // Numeric grid for MNIST: dark cell with subtle tint, showing value
+            const tint = Math.round(v * 60);
+            const bgCol = isDark ? `rgb(${15+tint},${23+tint},${42+tint})` : `rgb(${255-tint},${255-tint},${255-tint})`;
+            const cellStroke = isDark ? 'rgba(51,65,85,0.5)' : 'rgba(203,213,225,0.6)';
+            g.appendChild(el('rect',{x:cx2,y:cy2,width:CELL+0.5,height:CELL+0.5,
+              fill:bgCol,stroke:cellStroke,'stroke-width':'0.4'}));
+            // Value text — use short format for small cells
+            const bright = v > 0.4;
+            const fontSize = Math.max(5, Math.min(7, CELL * 0.55));
+            const tv=el('text',{x:cx2+CELL/2,y:cy2+CELL/2+fontSize*0.35,'text-anchor':'middle',
+              'font-family':'JetBrains Mono,monospace','font-size':fontSize.toFixed(1),'font-weight':'700',
+              fill:bright?(isDark?'#fbbf24':'#92400e'):(isDark?'rgba(148,163,184,0.7)':'rgba(100,116,139,0.6)')});
+            tv.textContent = v < 0.005 ? '' : v.toFixed(1);
             g.appendChild(tv);
+          } else {
+            let fillCol = "rgb("+grey+","+grey+","+grey+")";
+            if (colorMode && ch===0) fillCol = "rgba("+grey+",0,0,0.85)";
+            if (colorMode && ch===1) fillCol = "rgba(0,"+grey+",0,0.85)";
+            if (colorMode && ch===2) fillCol = "rgba(0,0,"+grey+",0.85)";
+
+            const cellStroke = isDark?'rgba(0,0,0,.6)':'rgba(226,232,240,.9)';
+            g.appendChild(el('rect',{x:cx2,y:cy2,width:CELL+0.5,height:CELL+0.5,
+              fill:fillCol,stroke:cellStroke,'stroke-width':'0.5'}));
+
+            if(!colorMode || ch===2){
+              const bright=v>.5;
+              const tv=el('text',{x:cx2+CELL/2,y:cy2+CELL/2+4,'text-anchor':'middle',
+                'font-family':'JetBrains Mono,monospace','font-size':'10.5','font-weight':'700',
+                fill:bright?'#0f172a':(isDark?'rgba(240,244,255,.9)':'rgba(240,244,255,.9)')});
+              tv.textContent=v.toFixed(2);
+              g.appendChild(tv);
+            }
           }
         }
       }
@@ -1809,7 +1838,7 @@ function buildNetwork(keepWeights=false){
 
   const outActs=acts[total-1];
   const tPrep = demoMode ? layerDur * 1.5 : 0;
-  const tWait = demoMode ? (colorMode ? layerDur * 6.0 : layerDur * 5.0) : 0;
+  const tWait = demoMode ? (colorMode ? layerDur * 6.0 : layerDur * 5.0) : layerDur * 2.0;
   const tc = tPrep + nSeg*layerDur + layerDur*0.2 + tWait;
   const tExt = tPrep; // Alias for other components
   pc=0; rep=loopAnim?'indefinite':'1';
