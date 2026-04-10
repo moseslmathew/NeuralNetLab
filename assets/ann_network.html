@@ -887,7 +887,7 @@ function toggleDemo(type){
     demoVehicleIdx = Math.floor(Math.random() * activeData.length);
     document.getElementById('iv').value = (demoType === 'mnist') ? 16 : 16;
     document.getElementById('sl-input').value = document.getElementById('iv').value;
-    document.getElementById('lv').value = (demoType === 'mnist') ? 1 : 3; 
+    document.getElementById('lv').value = (demoType === 'mnist') ? 1 : 2; 
     document.getElementById('sl-layers').value = document.getElementById('lv').value;
     document.getElementById('nv').value = (demoType === 'mnist') ? 16 : 16;
     document.getElementById('sl-nodes').value = document.getElementById('nv').value;
@@ -1260,19 +1260,23 @@ function drawVehiclePanel(svg,veh,pos,NODE_R,H,tc,nInput,tExt,centerOffset=0){
           const cx2=gridX+cc*CELL + offsetX, cy2=gridY+r*CELL + offsetY;
 
           if(demoType==='mnist'){
-            // Numeric grid for MNIST: dark cell with subtle tint, showing value
-            const tint = Math.round(v * 60);
-            const bgCol = isDark ? `rgb(${15+tint},${23+tint},${42+tint})` : `rgb(${255-tint},${255-tint},${255-tint})`;
-            const cellStroke = isDark ? 'rgba(51,65,85,0.5)' : 'rgba(203,213,225,0.6)';
-            g.appendChild(el('rect',{x:cx2,y:cy2,width:CELL+0.5,height:CELL+0.5,
-              fill:bgCol,stroke:cellStroke,'stroke-width':'0.4'}));
-            // Value text — use short format for small cells
-            const bright = v > 0.4;
-            const fontSize = Math.max(5, Math.min(7, CELL * 0.55));
+            // Numeric grid for MNIST: more dense, with better presence
+            const tint = Math.round(v * 90);
+            const b0 = isDark ? 20 : 255;
+            const bgCol = isDark ? `rgb(${b0+tint},${b0+tint},${b0+tint+10})` : `rgb(${b0-tint},${b0-tint},${b0-tint})`;
+            const cellStroke = isDark ? 'rgba(51,65,85,0.3)' : 'rgba(203,213,225,0.4)';
+            g.appendChild(el('rect',{x:cx2,y:cy2,width:CELL+0.6,height:CELL+0.6,
+              fill:bgCol,stroke:cellStroke,'stroke-width':'0.3'}));
+            
+            // Value text — more dense formatting
+            const bright = v > 0.35;
+            const fontSize = Math.max(6.5, Math.min(8.5, CELL * 0.7));
             const tv=el('text',{x:cx2+CELL/2,y:cy2+CELL/2+fontSize*0.35,'text-anchor':'middle',
-              'font-family':'JetBrains Mono,monospace','font-size':fontSize.toFixed(1),'font-weight':'700',
-              fill:bright?(isDark?'#fbbf24':'#92400e'):(isDark?'rgba(148,163,184,0.7)':'rgba(100,116,139,0.6)')});
-            tv.textContent = v < 0.005 ? '' : v.toFixed(1);
+              'font-family':'JetBrains Mono,monospace','font-size':fontSize.toFixed(1),'font-weight':'800',
+              fill:bright?(isDark?'#fcd34d':'#b45309'):(isDark?'rgba(148,163,184,0.45)':'rgba(100,116,139,0.35)')});
+            
+            // Show more numbers (smaller threshold)
+            tv.textContent = v < 0.001 ? '' : v.toFixed(1);
             g.appendChild(tv);
           } else {
             let fillCol = "rgb("+grey+","+grey+","+grey+")";
