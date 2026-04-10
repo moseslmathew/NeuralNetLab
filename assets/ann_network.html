@@ -195,7 +195,7 @@ body{font-family:'Inter',sans-serif}
 .sdiv{border:none;border-top:1px solid var(--divider);margin:4px 0}
 .sl-row{display:flex;align-items:center;gap:8px}
 .sl-row .sl-lbl{font-size:12px;font-weight:600;color:var(--label);flex:1}
-input[type=range]{-webkit-appearance:none;width:76px;height:5px;background:var(--track-off);border-radius:3px;outline:none}
+input[type=range]{-webkit-appearance:none;appearance:none;width:76px;height:5px;background:var(--track-off);border-radius:3px;outline:none}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:#818cf8;cursor:pointer;box-shadow:0 2px 5px rgba(0,0,0,0.3);transition:transform 0.15s}
 input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.25)}
 input[type=range].int-sl::-webkit-slider-thumb{background:#f59e0b}
@@ -337,7 +337,6 @@ input[type=range].int-sl::-webkit-slider-thumb{background:#f59e0b}
 
         <div class="toggle-row" style="margin-top:6px"><span class="tgl-lbl">Number Classification</span><div class="t-track" id="mnist-toggle" onclick="toggleDemo('mnist')"><div class="t-thumb"></div></div></div>
 
-        <div class="toggle-row" style="margin-top:6px;cursor:pointer" onclick="toggleSimplified()"><span class="tgl-lbl">Simplified View</span><div class="t-track" id="simplified-toggle"><div class="t-thumb"></div></div></div>
 
         <div class="toggle-row" style="margin-top:8px"><span class="tgl-lbl" id="dyn-lbl">Dynamic Flow</span><div class="t-track on" id="dyn-toggle" onclick="toggleDynamic()"><div class="t-thumb"></div></div></div>
         <div class="toggle-row" style="margin-top:6px"><span class="tgl-lbl">Loop Animation</span><div class="t-track on" id="loop-toggle" onclick="toggleLoop()"><div class="t-thumb"></div></div></div>
@@ -449,7 +448,6 @@ input[type=range].int-sl::-webkit-slider-thumb{background:#f59e0b}
     <div class="lp-section-lbl">Animation</div>
     <div class="lp-row"><span class="lp-tgl-lbl">Vehicle Classification</span><div class="t-track" id="veh-toggle2" onclick="toggleDemo('vehicle');syncToggle('veh-toggle','veh-toggle2')"><div class="t-thumb"></div></div></div>
     <div class="lp-row"><span class="lp-tgl-lbl">Number Classification</span><div class="t-track" id="mnist-toggle2" onclick="toggleDemo('mnist');syncToggle('mnist-toggle','mnist-toggle2')"><div class="t-thumb"></div></div></div>
-    <div class="lp-row"><span class="lp-tgl-lbl">Simplified View</span><div class="t-track" id="simplified-toggle2" onclick="toggleSimplified();syncToggle('simplified-toggle','simplified-toggle2')"><div class="t-thumb"></div></div></div>
     <div class="lp-row"><span class="lp-tgl-lbl">Dynamic Flow</span><div class="t-track on" id="dyn-toggle2" onclick="toggleDynamic();syncToggle('dyn-toggle','dyn-toggle2')"><div class="t-thumb"></div></div></div>
     <div class="lp-row"><span class="lp-tgl-lbl">Loop Animation</span><div class="t-track on" id="loop-toggle2" onclick="toggleLoop();syncToggle('loop-toggle','loop-toggle2')"><div class="t-thumb"></div></div></div>
     <div class="lp-row"><span class="lp-tgl-lbl">Pause Flow</span><div class="t-track" id="pause-toggle2" onclick="togglePause();syncToggle('pause-toggle','pause-toggle2')"><div class="t-thumb"></div></div></div>
@@ -649,7 +647,6 @@ const MNIST_DATA = [
 let demoType = 'vehicle';
 let activeData = VEHICLE_DATA;
 const VEHICLES = VEHICLE_DATA;
-let simplifiedMode = false;
 
 // ═══ Simplified Vehicle Data — references real VEHICLE_DATA (car, truck, moto)
 // Defined as a getter so VEHICLE_DATA is already populated when accessed
@@ -847,11 +844,6 @@ function onIntensity(){intensity=+document.getElementById('sl-intensity').value;
 function toggleClsMenu(){ /* submenu removed */ }
 function syncClsBadge(){ /* badge removed */ }
 function toggleDemo(type){
-  // Turn off simplified mode when switching to another demo
-  if(simplifiedMode){
-    simplifiedMode=false;
-    document.getElementById('simplified-toggle')?.classList.remove('on');
-  }
 
   if (type) {
     if (demoMode && demoType === type) {
@@ -896,41 +888,6 @@ function toggleDemo(type){
   buildNetwork(false);
 }
 
-function toggleSimplified(){
-  // Turn off any active demo first
-  if(demoMode){
-    demoMode=false;
-    document.getElementById('veh-toggle')?.classList.remove('on');
-    document.getElementById('mnist-toggle')?.classList.remove('on');
-    colorMode=false;
-    const cmt=document.getElementById('color-mode-toggle');
-    if(cmt) cmt.classList.remove('on');
-    document.getElementById('img-mode-row').style.display='none';
-    document.getElementById('settings-label').style.display='none';
-  }
-
-  simplifiedMode = !simplifiedMode;
-  document.getElementById('simplified-toggle')?.classList.toggle('on', simplifiedMode);
-
-  if(simplifiedMode){
-    activeData = getSimplifiedVehicles();
-    demoVehicleIdx = 0;
-    // Lock architecture to 5-6-6-3
-    document.getElementById('iv').value = 5;  document.getElementById('sl-input').value = 5;
-    document.getElementById('lv').value = 2;  document.getElementById('sl-layers').value = 2;
-    document.getElementById('nv').value = 6;  document.getElementById('sl-nodes').value = 6;
-    document.getElementById('ov').value = 3;  document.getElementById('sl-output').value = 3;
-    document.getElementById('arch-section').classList.add('dim');
-    document.getElementById('sl-output').closest('.sl-row').style.opacity='0.35';
-    document.getElementById('sl-output').closest('.sl-row').style.pointerEvents='none';
-  } else {
-    activeData = VEHICLE_DATA;
-    document.getElementById('arch-section').classList.remove('dim');
-    document.getElementById('sl-output').closest('.sl-row').style.opacity='1';
-    document.getElementById('sl-output').closest('.sl-row').style.pointerEvents='auto';
-  }
-  buildNetwork(false);
-}
 
 function buildVehiclePicker(){ /* right-panel removed — no-op */ }
 
@@ -1040,13 +997,15 @@ function drawOutputNode(svg,x,y,act,col,r,arrivals,tc){
     // Stroke width pulse on arrival
     outerNode.appendChild(smil('animate',{attributeName:'stroke-width',values:`2;2;${(2+act*3).toFixed(1)};${(2+act*3).toFixed(1)};2;2`,keyTimes:kt,dur:`${tc}s`,repeatCount:rep,fill:fz,calcMode:'spline',keySplines:sp}));
   }
-  if(arrivals.length>0 && !demoMode){
+  if(arrivals.length>0){
     const pw=34,bg=el('g',{opacity:'0'});
     bg.appendChild(el('rect',{x:x+r+4,y:y-8.5,width:pw,height:17,rx:'6',fill:isDark?'#0f172a':'#fff',stroke:col.stroke,'stroke-width':'1.5'}));
     const bt=el('text',{x:x+r+4+pw/2,y:y+4.5,'text-anchor':'middle','font-family':'JetBrains Mono,monospace','font-size':'10','font-weight':'700',fill:col.text});
     bt.textContent=act.toFixed(2);bg.appendChild(bt);
     const t0=+(arrivals[0].arriveAt/tc).toFixed(7);
-    const kt=loopAnim?`0;${Math.max(0,t0-.02).toFixed(7)};${t0};.90;.95;1`:`0;${Math.max(0,t0-.02).toFixed(7)};${t0};1`;
+    const tHold=+(Math.min(0.97, t0+(1-t0)*0.70)).toFixed(7);
+    const tFade=+(Math.min(0.99, t0+(1-t0)*0.90)).toFixed(7);
+    const kt=loopAnim?`0;${Math.max(0,t0-.02).toFixed(7)};${t0};${tHold};${tFade};1`:`0;${Math.max(0,t0-.02).toFixed(7)};${t0};1`;
     bg.appendChild(smil('animate',{attributeName:'opacity',values:loopAnim?'0;0;1;1;0;0':'0;0;1;1',keyTimes:kt,dur:`${tc}s`,repeatCount:rep,fill:fz}));
     svg.appendChild(bg);
   }
@@ -1810,7 +1769,7 @@ function buildNetwork(keepWeights=false){
   const layerDur=SPEED_MAP[spIdx];
 
   const nInput =+document.getElementById('sl-input').value;
-  const nOutput=(demoMode||simplifiedMode)?activeData.length :+document.getElementById('sl-output').value;
+  const nOutput=demoMode?activeData.length :+document.getElementById('sl-output').value;
 
   document.getElementById('lv').value=nHidden;
   document.getElementById('nv').value=nNodes;
@@ -1823,7 +1782,7 @@ function buildNetwork(keepWeights=false){
 
   if(!keepWeights){
     initWeights(layers);
-    if(demoMode||simplifiedMode){
+    if(demoMode){
       const veh=activeData[demoVehicleIdx];
       for(let ni=0;ni<nOutput;ni++)
         for(let pi=0;pi<nNodes;pi++)
@@ -1832,16 +1791,16 @@ function buildNetwork(keepWeights=false){
   }
 
   const currentVeh = activeData[demoVehicleIdx];
-  const fullPixels=(demoMode||simplifiedMode)?(colorMode&&demoMode?[...currentVeh.R,...currentVeh.G,...currentVeh.B]:(demoType==='mnist'&&demoMode?currentVeh.samples[currentVeh.currentSample].pixels:currentVeh.pixels)):null;
+  const fullPixels=demoMode?(colorMode?[...currentVeh.R,...currentVeh.G,...currentVeh.B]:(demoType==='mnist'?currentVeh.samples[currentVeh.currentSample].pixels:currentVeh.pixels)):null;
   // For MNIST: sample nInput evenly-spaced values from the full pixel array
   // For vehicle/simplified: take first nInput values
   const sampledPixels = (demoMode && demoType==='mnist')
     ? Array.from({length:nInput},(_,i)=>fullPixels[Math.round(i/Math.max(1,nInput-1)*(fullPixels.length-1))])
     : fullPixels;
-  const inputActs=(demoMode||simplifiedMode)?sampledPixels.slice(0,nInput).concat(Array(Math.max(0,nInput-sampledPixels.length)).fill(0)):undefined;
+  const inputActs=demoMode?sampledPixels.slice(0,nInput).concat(Array(Math.max(0,nInput-sampledPixels.length)).fill(0)):undefined;
   const acts=computeActivations(layers,inputActs);
 
-  if(demoMode||simplifiedMode){
+  if(demoMode){
     const veh=activeData[demoVehicleIdx];
     const expW=veh.outWeights.map(w=>Math.exp(w*3));
     const sumE=expW.reduce((a,b)=>a+b,0);
@@ -1850,7 +1809,7 @@ function buildNetwork(keepWeights=false){
 
   const outActs=acts[total-1];
   const tPrep = demoMode ? layerDur * 1.5 : 0;
-  const tWait = demoMode ? (colorMode ? layerDur * 6.0 : layerDur * 5.0) : (simplifiedMode ? layerDur * 0.8 : 0);
+  const tWait = demoMode ? (colorMode ? layerDur * 6.0 : layerDur * 5.0) : 0;
   const tc = tPrep + nSeg*layerDur + layerDur*0.2 + tWait;
   const tExt = tPrep; // Alias for other components
   pc=0; rep=loopAnim?'indefinite':'1';
@@ -1860,23 +1819,25 @@ function buildNetwork(keepWeights=false){
   const VSP=Math.max(NODE_R*2+1,Math.min(62,Math.floor(680/(maxN+1))));
   const autoHideLabels=maxN>50;
   const PAD_Y=78;
-  const PAD_X=demoMode?440:(simplifiedMode?420:120);
-  const RIGHT_PAD=demoMode?200:(simplifiedMode?160:100);
+  const PAD_X=demoMode?440:120;
+  const RIGHT_PAD=demoMode?200:100;
   const mainArea=document.querySelector('.main-area');
   const availW=mainArea?mainArea.clientWidth:window.innerWidth;
   const availH=mainArea?mainArea.clientHeight:window.innerHeight;
-  const layoutW=(demoMode||simplifiedMode)?Math.max(availW,PAD_X+RIGHT_PAD+(total-1)*90):availW;
+  const layoutW=demoMode?Math.max(availW,PAD_X+RIGHT_PAD+(total-1)*90):availW;
   const xStep=Math.min(220,Math.max(90,(layoutW-PAD_X-RIGHT_PAD)/Math.max(1,total-1)));
   const contentW=PAD_X+xStep*(total-1)+RIGHT_PAD;
   const contentH=VSP*(maxN+1)+PAD_Y*2;
   const centerOffset=Math.max(0,Math.floor((availW-contentW)/2));
-  const centerOffsetY=(demoMode||simplifiedMode)?0:Math.max(0,Math.floor((availH-contentH)/2));
+  const centerOffsetY=demoMode?0:Math.max(0,Math.floor((availH-contentH)/2));
   const W=Math.max(availW, contentW);
   const H=Math.max(availH, contentH);
 
   if(flyAnimTl){flyAnimTl.kill();flyAnimTl=null;}
   const svg=document.getElementById('nn-svg');
-  svg.innerHTML='';svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  svg.innerHTML='';
+  try { svg.setCurrentTime(0); } catch(e) {}
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
 
   const defs=el('defs',{});
   const glow=el('filter',{id:'glow',x:'-30%',y:'-30%',width:'160%',height:'160%'});
@@ -1919,7 +1880,6 @@ function buildNetwork(keepWeights=false){
   });
 
   if(demoMode) drawVehiclePanel(svg,activeData[demoVehicleIdx],pos,NODE_R,H,tc,nInput,tExt,centerOffset);
-  if(simplifiedMode) drawSimplifiedPanel(svg,activeData[demoVehicleIdx],pos,NODE_R,tc,tExt,centerOffset);
 
   const tip=document.getElementById('wt-tip');
   const arrivals=[{arriveAt: tExt + nSeg*layerDur}];
@@ -2066,13 +2026,28 @@ function buildNetwork(keepWeights=false){
         }
         svg.appendChild(core);
 
-        if(li===0 && !autoHideLabels && !demoMode){
-            const val=acts[0][ni]||0;
+        // Node value labels (Input & Output)
+        if((li===0 || li===total-1) && !autoHideLabels && !demoMode){
+            const val=acts[li][ni]||0;
+            const isOut = (li===total-1);
             const pillW=32, pillH=15;
-            svg.appendChild(el('line',{x1:x-r-25,y1:y,x2:x-r-2,y2:y,stroke:col.stroke,'stroke-width':1.5,opacity:'.3'}));
-            svg.appendChild(el('rect',{x:x-r-10-pillW,y:y-pillH/2,width:pillW,height:pillH,rx:4,fill:isDark?'rgba(15,23,42,.6)':'#f8fafc',stroke:col.stroke,'stroke-width':'1',opacity:'.8'}));
-            const pvl=el('text',{x:x-r-10-pillW/2,y:y+3,'text-anchor':'middle','font-family':'JetBrains Mono,monospace','font-size':'8','font-weight':'700',fill:isDark?'#cbd5e1':'#334155'});
-            pvl.textContent=val.toFixed(2);svg.appendChild(pvl);
+            const lx1 = isOut ? x+r+2 : x-r-25;
+            const lx2 = isOut ? x+r+25 : x-r-2;
+            const px = isOut ? x+r+10 : x-r-10-pillW;
+            
+            svg.appendChild(el('line',{x1:lx1,y1:y,x2:lx2,y2:y,stroke:col.stroke,'stroke-width':1.5,opacity:'.3'}));
+            const pill = el('rect',{x:px,y:y-pillH/2,width:pillW,height:pillH,rx:4,fill:isDark?'rgba(15,23,42,.6)':'#f8fafc',stroke:col.stroke,'stroke-width':'1',opacity:'.8'});
+            svg.appendChild(pill);
+            const pvl=el('text',{x:px+pillW/2,y:y+3,'text-anchor':'middle','font-family':'JetBrains Mono,monospace','font-size':'8','font-weight':'700',fill:isDark?'#cbd5e1':'#334155'});
+            pvl.textContent=val.toFixed(2);
+            svg.appendChild(pvl);
+            
+            if(lineMode==='dynamic' && isOut){
+               pill.setAttribute('opacity','0'); pvl.setAttribute('opacity','0');
+               const t0 = (tPrep + nSeg * layerDur) / tc;
+               pill.appendChild(smil('animate',{attributeName:'opacity',values:'0;0;0.8;0.8',keyTimes:`0;${t0};${t0+0.02};1`,dur:tc+'s',repeatCount:rep,fill:fz}));
+               pvl.appendChild(smil('animate',{attributeName:'opacity',values:'0;0;1;1',keyTimes:`0;${t0};${t0+0.02};1`,dur:tc+'s',repeatCount:rep,fill:fz}));
+            }
         }
 
         const hn=el('circle',{cx:x,cy:y,r:Math.max(r+5,8),fill:'transparent',style:'cursor:pointer'});
