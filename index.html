@@ -4360,19 +4360,18 @@
         <div class="s6-content">
           <div class="premium-header">
             <div class="year-badge">LEARNING</div>
-            <h2 class="s6-title" style="margin-top:0;">The Same Way You Learned What a Dog Is.</h2>
-            <div class="s6-subtitle">Machine learning isn't magic—it's iterative correction.</div>
+            <h2 class="s6-title" style="margin-top:0;">Machine learning isn't magic—it's iterative correction.</h2>
           </div>
 
           <div class="s6-comparison-grid">
             <!-- Headers -->
-            <div class="s6-headers-row" style="justify-content: center; gap: 40px;">
-              <div class="s6-col-header" style="flex: 0 1 auto; width: 400px; justify-content: center;">
+            <div class="s6-headers-row">
+              <div class="s6-col-header">
                 <span class="s6-header-icon">👶</span>
                 <span class="s6-child-color">How a Child Learns</span>
               </div>
               <div class="s6-approx">≈</div>
-              <div class="s6-col-header s6-col-header-ai" style="flex: 0 1 auto; width: 400px; justify-content: center;">
+              <div class="s6-col-header s6-col-header-ai">
                 <span class="s6-header-icon">🤖</span>
                 <span class="s6-ai-color">How an AI Trains</span>
               </div>
@@ -4462,10 +4461,6 @@
           </div>
         </div>
 
-        <div class="s6-controls">
-          <button class="s6-btn" id="s6-prev" onclick="s6Step(-1)" disabled>← Back</button>
-          <button class="s6-btn" id="s6-next" onclick="s6Step(1)">Next Step →</button>
-        </div>
       </section>
 
       <!-- SLIDE 07: ANN ARCHITECTURE -->
@@ -6205,8 +6200,8 @@
         const slide = document.getElementById("slideSix");
 
         // RESET: all hidden by default
-        document.querySelectorAll(".s6-card, .s6-connector").forEach((el) => el.classList.remove("active"));
-        slide.classList.remove("all-revealed", "phase-ai");
+        document.querySelectorAll("#slideSix .s6-card, #slideSix .s6-connector").forEach((el) => el.classList.remove("active"));
+        slide.classList.remove("all-revealed", "phase-ai", "phase-child");
 
         // PHASE 1: Child learning (Steps 1-5)
         if (s6CurrentStep > 0 && s6CurrentStep <= 5) {
@@ -6219,35 +6214,52 @@
 
         // PHASE 2: AI Comparison (Step 6)
         if (s6CurrentStep > 5) {
-          slide.classList.remove("phase-child");
           slide.classList.add("phase-ai");
           
           // Show all child cards
-          document.querySelectorAll(".s6-card:not(.s6-card-right)").forEach(c => c.classList.add("active"));
+          document.querySelectorAll("#slideSix .s6-card:not(.s6-card-right)").forEach(c => c.classList.add("active"));
           
-          // Show all AI cards and numbers
+          // Show all AI cards and connectors
           setTimeout(() => {
-            document.querySelectorAll(".s6-card-right, .s6-connector").forEach((el) => el.classList.add("active"));
+            document.querySelectorAll("#slideSix .s6-card-right, #slideSix .s6-connector").forEach((el) => el.classList.add("active"));
             slide.classList.add("all-revealed");
           }, 100);
         }
-
-        // Update buttons: Back only disabled at start. Next only disabled AFTER show-all step.
-        document.getElementById("s6-prev").disabled = s6CurrentStep === 0;
-        document.getElementById("s6-next").disabled = false; // Never fully disable unless you want to lock it.
-        // Actually, let's keep Next enabled to allow "Finish" to feel like a state.
-
-
-        // Change button text
-        const nextBtn = document.getElementById("s6-next");
-        if (s6CurrentStep === 5) {
-          nextBtn.textContent = "Reveal AI Training →";
-        } else if (s6CurrentStep > 5) {
-          nextBtn.textContent = "Finish ✓";
-        } else {
-          nextBtn.textContent = "Next Step →";
-        }
       }
+
+      // Interaction listeners for Slide 6
+      (function initS6Interactions() {
+        const slide = document.getElementById("slideSix");
+        
+        // Handle clicks: Advance forward
+        slide.addEventListener("click", () => {
+          if (s6CurrentStep > 5) return; // Already finished
+          s6Step(1);
+        });
+
+        // Handle wheel: Scroll up for back, scroll down for forward
+        let lastWheelTime = 0;
+        slide.addEventListener("wheel", (e) => {
+          const now = Date.now();
+          if (now - lastWheelTime < 300) return; // Debounce
+          
+          if (e.deltaY > 0) {
+            // Scroll down -> Forward
+            if (s6CurrentStep <= 5) {
+                s6Step(1);
+                lastWheelTime = now;
+                e.preventDefault();
+            }
+          } else if (e.deltaY < 0) {
+            // Scroll up -> Back
+            if (s6CurrentStep > 0) {
+                s6Step(-1);
+                lastWheelTime = now;
+                e.preventDefault();
+            }
+          }
+        }, { passive: false });
+      })();
 
 
 
