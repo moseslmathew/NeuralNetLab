@@ -591,6 +591,29 @@
         flex-direction: column;
         align-items: center;
       }
+      /* Left-align hero content over the Ball in Dual mode */
+      .ui.ui-left {
+        align-items: flex-start;
+        padding-left: 6vw;
+      }
+      .ui.ui-left .title-wrap {
+        width: auto;
+        max-width: 50%;
+        text-align: left;
+        align-items: flex-start;
+      }
+      @media (max-width: 768px) {
+        .ui.ui-left {
+          align-items: center;
+          padding-left: 0;
+        }
+        .ui.ui-left .title-wrap {
+          width: 100%;
+          max-width: 100%;
+          text-align: center;
+          align-items: center;
+        }
+      }
 
       .title {
         font-family: var(--font-heading);
@@ -4359,7 +4382,7 @@
         <!-- Corner slide number -->
         <div class="hero-slide-num">01 &nbsp;/&nbsp; 07</div>
 
-        <div class="ui">
+        <div class="ui ui-left">
           <div class="title-wrap">
             <div class="hero-eyebrow">
               <div class="hero-eyebrow-dot"></div>
@@ -5077,6 +5100,9 @@
         synapseNodes = []; synapseParticles2 = [];
         nexusNodes = []; streamParticles = []; stormNodes = []; ballNodes = []; annNodes = []; annPulses = []; annParticles = []; dualInited = false;
         bx.clearRect(0, 0, BW, BH);
+        // Toggle left-align class for Dual mode
+        const uiEl = document.querySelector('#slideOne .ui');
+        if (uiEl) uiEl.classList.toggle('ui-left', mode === 'dual');
         document.querySelectorAll('.bg-btn').forEach(b =>
           b.classList.toggle('active', b.dataset.bg === mode));
       }
