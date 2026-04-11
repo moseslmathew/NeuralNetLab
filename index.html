@@ -593,14 +593,14 @@
       }
       /* Left-align hero content over the Ball in Dual mode */
       .ui.ui-left {
-        align-items: flex-start;
-        padding-left: 6vw;
+        align-items: center;
+        padding-left: 0;
       }
       .ui.ui-left .title-wrap {
-        width: auto;
-        max-width: 50%;
-        text-align: left;
-        align-items: flex-start;
+        width: 100%;
+        max-width: 100%;
+        text-align: center;
+        align-items: center;
       }
       @media (max-width: 768px) {
         .ui.ui-left {
@@ -5504,9 +5504,10 @@
         // ═══════════════════════════════════════
         //  LEFT SIDE: 3D Ball
         // ═══════════════════════════════════════
-        const ballCx = BW * 0.25, ballCy = BH * 0.45;
+        // Ball centered behind the Architect ANN
+        const ballCx = BW * 0.82, ballCy = BH * 0.48;
         const rotX = bt * 0.0018, rotY = bt * 0.0025;
-        const baseRadius = Math.min(BW * 0.5, BH) * 0.32;
+        const baseRadius = Math.min(BW * 0.35, BH) * 0.35;
         const bPulse = 0.92 + Math.sin(bt * 0.006) * 0.08;
         const bRadius = baseRadius * bPulse;
 
