@@ -2810,7 +2810,7 @@
         transform: translateY(10px);
         transition: all 0.6s ease 0.4s;
       }
-      .slide-six.all-revealed .s6-footer-insight { opacity: 1; transform: translateY(0); }
+      .slide-six.show-footer .s6-footer-insight { opacity: 1; transform: translateY(0); }
       .s6-footer-highlight { color: #facc15; font-weight: 600; font-style: normal; }
       .s6-footer-accent { color: #22d3ee; font-weight: 600; font-style: normal; }
       .light-mode .s6-footer-insight {
@@ -6186,7 +6186,7 @@
 
       // Slide 6 "How AI Learns" Stepper Logic
       let s6CurrentStep = 0;
-      const s6TotalSteps = 5;
+      const s6TotalSteps = 6;
 
       function s6Step(delta) {
         const newStep = Math.max(
@@ -6201,29 +6201,32 @@
 
         // RESET: all hidden by default
         document.querySelectorAll("#slideSix .s6-card, #slideSix .s6-connector").forEach((el) => el.classList.remove("active"));
-        slide.classList.remove("all-revealed", "phase-ai", "phase-child");
+        slide.classList.remove("all-revealed", "phase-ai", "phase-child", "show-footer");
 
         // PHASE 1: Child learning (Steps 1-5)
         if (s6CurrentStep > 0 && s6CurrentStep <= 5) {
           slide.classList.add("phase-child");
           for (let i = 1; i <= s6CurrentStep; i++) {
             const row = document.getElementById(`s6-row-${i}`);
-            row.querySelector(".s6-card:not(.s6-card-right)").classList.add("active");
+            if (row) row.querySelector(".s6-card:not(.s6-card-right)").classList.add("active");
           }
         }
 
         // PHASE 2: AI Comparison (Step 6)
-        if (s6CurrentStep > 5) {
+        if (s6CurrentStep >= 6) {
           slide.classList.add("phase-ai");
           
           // Show all child cards
           document.querySelectorAll("#slideSix .s6-card:not(.s6-card-right)").forEach(c => c.classList.add("active"));
           
           // Show all AI cards and connectors
-          setTimeout(() => {
-            document.querySelectorAll("#slideSix .s6-card-right, #slideSix .s6-connector").forEach((el) => el.classList.add("active"));
-            slide.classList.add("all-revealed");
-          }, 100);
+          document.querySelectorAll("#slideSix .s6-card-right, #slideSix .s6-connector").forEach((el) => el.classList.add("active"));
+          slide.classList.add("all-revealed");
+        }
+
+        // PHASE 3: Concluding Insight (Step 7)
+        if (s6CurrentStep >= 7) {
+          slide.classList.add("show-footer");
         }
       }
 
@@ -6233,7 +6236,7 @@
         
         // Handle clicks: Advance forward
         slide.addEventListener("click", () => {
-          if (s6CurrentStep > 5) return; // Already finished
+          if (s6CurrentStep > 6) return; // Already finished (step 7)
           s6Step(1);
         });
 
@@ -6245,7 +6248,7 @@
           
           if (e.deltaY > 0) {
             // Scroll down -> Forward
-            if (s6CurrentStep <= 5) {
+            if (s6CurrentStep <= 6) {
                 s6Step(1);
                 lastWheelTime = now;
                 e.preventDefault();
