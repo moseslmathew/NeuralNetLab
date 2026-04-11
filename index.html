@@ -4311,8 +4311,11 @@
           <button class="settings-btn bg-btn" data-bg="ball" onclick="setHeroBg('ball')">
             <span class="bg-icon">🧶</span>Ball
           </button>
-          <button class="settings-btn bg-btn active" data-bg="ann" onclick="setHeroBg('ann')">
+          <button class="settings-btn bg-btn" data-bg="ann" onclick="setHeroBg('ann')">
             <span class="bg-icon">🕸</span>Architect
+          </button>
+          <button class="settings-btn bg-btn active" data-bg="dual" onclick="setHeroBg('dual')">
+            <span class="bg-icon">◐</span>Dual
           </button>
         </div>
       </div>
@@ -5068,11 +5071,11 @@
       }, 1000);
 
       // ── B. BACKGROUND MANAGER ─────────────────────────────────────────────
-      let heroBg = 'ann';
+      let heroBg = 'dual';
       function setHeroBg(mode) {
         heroBg = mode;
         synapseNodes = []; synapseParticles2 = [];
-        nexusNodes = []; streamParticles = []; stormNodes = []; ballNodes = []; annNodes = []; annPulses = []; annParticles = [];
+        nexusNodes = []; streamParticles = []; stormNodes = []; ballNodes = []; annNodes = []; annPulses = []; annParticles = []; dualInited = false;
         bx.clearRect(0, 0, BW, BH);
         document.querySelectorAll('.bg-btn').forEach(b =>
           b.classList.toggle('active', b.dataset.bg === mode));
@@ -5420,6 +5423,246 @@
           bx.fill();
         });
       }
+
+      /* ── M. DUAL — Ball + Architect Side-by-Side ───────────────────────── */
+      let dualInited = false;
+      let dualBallNodes = [];
+      let dualAnnNodes = [], dualAnnPulses = [], dualAnnLayerCount = 0;
+
+      function initDual() {
+        dualInited = true;
+        // ── Ball nodes (left side) ──
+        dualBallNodes = Array.from({ length: 150 }, () => {
+          const phi = Math.acos(-1 + (Math.random() * 2));
+          const theta = Math.random() * Math.PI * 2;
+          return { phi, theta, phase: Math.random() * Math.PI * 2, r: 1.5 + Math.random() * 2 };
+        });
+
+        // ── ANN nodes (right side, compressed) ──
+        dualAnnNodes = []; dualAnnPulses = [];
+        const isMobile = BW < 768;
+        const layers = isMobile ? [3, 4, 4, 3] : [3, 5, 7, 5, 3];
+        dualAnnLayerCount = layers.length;
+        // ANN occupies roughly the right 40% of the screen
+        const annLeft = isMobile ? BW * 0.55 : BW * 0.55;
+        const annRight = BW * 0.95;
+        const totalW = annRight - annLeft;
+        const spacingX = totalW / (layers.length - 1);
+        const nodeSpacingY = isMobile ? 48 : 60;
+
+        layers.forEach((count, li) => {
+          const totalH = (count - 1) * nodeSpacingY;
+          const startY = (BH - totalH) / 2;
+          for (let j = 0; j < count; j++) {
+            dualAnnNodes.push({
+              x: annLeft + li * spacingX,
+              y: startY + j * nodeSpacingY,
+              layer: li,
+              idx: j,
+              r: isMobile ? 7 : 10,
+              offset: Math.random() * Math.PI * 2,
+              baseX: annLeft + li * spacingX,
+              baseY: startY + j * nodeSpacingY,
+              activation: 0,
+            });
+          }
+        });
+      }
+
+      function drawDual() {
+        if (!dualInited) initDual();
+        const time = Date.now() * 0.001;
+        const isDark = !isLightMode;
+        const palette = isDark ? annLayerColors.dark : annLayerColors.light;
+
+        // ═══════════════════════════════════════
+        //  LEFT SIDE: 3D Ball
+        // ═══════════════════════════════════════
+        const ballCx = BW * 0.25, ballCy = BH * 0.45;
+        const rotX = bt * 0.0018, rotY = bt * 0.0025;
+        const baseRadius = Math.min(BW * 0.5, BH) * 0.32;
+        const bPulse = 0.92 + Math.sin(bt * 0.006) * 0.08;
+        const bRadius = baseRadius * bPulse;
+
+        const projected = dualBallNodes.map(n => {
+          let x3 = Math.sin(n.phi) * Math.cos(n.theta) * bRadius;
+          let y3 = Math.sin(n.phi) * Math.sin(n.theta) * bRadius;
+          let z3 = Math.cos(n.phi) * bRadius;
+          let y3r = y3 * Math.cos(rotX) - z3 * Math.sin(rotX);
+          let z3r = y3 * Math.sin(rotX) + z3 * Math.cos(rotX);
+          let x3r = x3 * Math.cos(rotY) + z3r * Math.sin(rotY);
+          let z3f = -x3 * Math.sin(rotY) + z3r * Math.cos(rotY);
+          const scale = 500 / (500 + z3f);
+          return { x: ballCx + x3r * scale, y: ballCy + y3r * scale, z: z3f, scale };
+        });
+
+        // Ball connections
+        bx.lineWidth = 0.6;
+        for (let i = 0; i < projected.length; i++) {
+          const p1 = projected[i];
+          if (p1.z > bRadius * 0.2) continue;
+          for (let j = i + 1; j < projected.length; j += 4) {
+            const p2 = projected[j];
+            const distSq = Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2);
+            if (distSq > (9000 * p1.scale)) continue;
+            const alpha = (1 - distSq / (9000 * p1.scale)) * 0.4;
+            bx.beginPath(); bx.moveTo(p1.x, p1.y); bx.lineTo(p2.x, p2.y);
+            bx.strokeStyle = isDark ? `rgba(34,211,238,${alpha * 0.45})` : `rgba(3,105,161,${alpha * 0.32})`;
+            bx.stroke();
+          }
+        }
+        // Ball nodes
+        projected.forEach(p => {
+          const opacity = Math.max(0.1, (bRadius + p.z) / (bRadius * 2));
+          bx.beginPath();
+          bx.arc(p.x, p.y, 2 * p.scale, 0, Math.PI * 2);
+          bx.fillStyle = isDark ? `rgba(255,255,255,${opacity * 0.7})` : `rgba(3,105,161,${opacity * 0.8})`;
+          bx.fill();
+        });
+
+        // ═══════════════════════════════════════
+        //  RIGHT SIDE: Architect ANN
+        // ═══════════════════════════════════════
+
+        // Float nodes
+        dualAnnNodes.forEach(n => {
+          n.y = n.baseY + Math.sin(time * 0.9 + n.offset) * 3;
+          n.x = n.baseX + Math.cos(time * 0.7 + n.offset * 1.3) * 1.5;
+          const dxM = mouse.x - n.x, dyM = mouse.y - n.y;
+          const mDist = Math.sqrt(dxM * dxM + dyM * dyM);
+          if (mDist < 140) n.activation = Math.min(1, n.activation + 0.05);
+          n.activation *= 0.965;
+        });
+
+        // Spawn ANN pulses
+        if (Math.random() < 0.08 && dualAnnPulses.length < 10) {
+          const l0 = dualAnnNodes.filter(n => n.layer === 0);
+          if (l0.length) {
+            const sn = l0[Math.floor(Math.random() * l0.length)];
+            const l1 = dualAnnNodes.filter(n => n.layer === 1);
+            if (l1.length) {
+              const en = l1[Math.floor(Math.random() * l1.length)];
+              dualAnnPulses.push({
+                from: sn, to: en, progress: 0,
+                speed: 0.01 + Math.random() * 0.008,
+                trail: [],
+                color: palette[Math.floor(Math.random() * palette.length)],
+              });
+              sn.activation = 1;
+            }
+          }
+        }
+
+        // ANN connections
+        dualAnnNodes.forEach(n1 => {
+          dualAnnNodes.forEach(n2 => {
+            if (n2.layer !== n1.layer + 1) return;
+            const distY = Math.abs(n1.baseY - n2.baseY);
+            const alphaFalloff = Math.max(0, 1 - distY / 340);
+            if (alphaFalloff <= 0) return;
+            const actBoost = Math.max(n1.activation, n2.activation);
+            const alpha = (0.12 + actBoost * 0.25) * alphaFalloff;
+            bx.lineWidth = 0.8 + actBoost * 1.5;
+            const c1 = palette[n1.layer % palette.length];
+            const c2 = palette[n2.layer % palette.length];
+            const grad = bx.createLinearGradient(n1.x, n1.y, n2.x, n2.y);
+            grad.addColorStop(0, hexToRgba(c1, alpha));
+            grad.addColorStop(1, hexToRgba(c2, alpha));
+            bx.strokeStyle = grad;
+            bx.beginPath(); bx.moveTo(n1.x, n1.y); bx.lineTo(n2.x, n2.y); bx.stroke();
+          });
+        });
+
+        // ANN pulses
+        for (let i = dualAnnPulses.length - 1; i >= 0; i--) {
+          const p = dualAnnPulses[i];
+          p.progress += p.speed;
+          if (p.progress >= 1) {
+            p.to.activation = Math.min(1, p.to.activation + 0.7);
+            const next = dualAnnNodes.filter(n => n.layer === p.to.layer + 1);
+            if (next.length) { p.from = p.to; p.to = next[Math.floor(Math.random() * next.length)]; p.progress = 0; }
+            else { dualAnnPulses.splice(i, 1); continue; }
+          }
+          const t = p.progress;
+          const px = p.from.x + (p.to.x - p.from.x) * t;
+          const py = p.from.y + (p.to.y - p.from.y) * t;
+          p.trail.push({x: px, y: py}); if (p.trail.length > 10) p.trail.shift();
+          if (p.trail.length > 1) {
+            for (let ti = 1; ti < p.trail.length; ti++) {
+              bx.beginPath();
+              bx.moveTo(p.trail[ti-1].x, p.trail[ti-1].y);
+              bx.lineTo(p.trail[ti].x, p.trail[ti].y);
+              bx.strokeStyle = hexToRgba(p.color, (ti / p.trail.length) * 0.6);
+              bx.lineWidth = (ti / p.trail.length) * 2.5;
+              bx.stroke();
+            }
+          }
+          bx.beginPath(); bx.arc(px, py, isDark ? 4 : 3, 0, Math.PI * 2);
+          bx.fillStyle = p.color;
+          if (isDark) { bx.shadowBlur = 18; bx.shadowColor = p.color; }
+          bx.fill();
+          bx.beginPath(); bx.arc(px, py, 1.5, 0, Math.PI * 2);
+          bx.fillStyle = 'rgba(255,255,255,0.9)'; bx.fill();
+          bx.shadowBlur = 0;
+        }
+
+        // ANN nodes
+        dualAnnNodes.forEach(n => {
+          const pulse = (Math.sin(time * 2.5 + n.offset) + 1) / 2;
+          const act = n.activation;
+          const nodeR = n.r + act * 2;
+          const lc = palette[n.layer % palette.length];
+
+          // Glow
+          if (isDark) {
+            const glowR = nodeR + 10 + act * 12;
+            const glow = bx.createRadialGradient(n.x, n.y, nodeR * 0.5, n.x, n.y, glowR);
+            glow.addColorStop(0, hexToRgba(lc, 0.08 + act * 0.15));
+            glow.addColorStop(1, hexToRgba(lc, 0));
+            bx.beginPath(); bx.arc(n.x, n.y, glowR, 0, Math.PI * 2);
+            bx.fillStyle = glow; bx.fill();
+          }
+
+          // Body
+          bx.beginPath(); bx.arc(n.x, n.y, nodeR, 0, Math.PI * 2);
+          if (isDark) {
+            const gFill = bx.createRadialGradient(n.x - nodeR * 0.3, n.y - nodeR * 0.3, 0, n.x, n.y, nodeR);
+            gFill.addColorStop(0, hexToRgba(lc, 0.20 + act * 0.25));
+            gFill.addColorStop(1, 'rgba(8,12,24,0.92)');
+            bx.fillStyle = gFill; bx.fill();
+            bx.lineWidth = 1.5 + act * 1.2;
+            bx.strokeStyle = hexToRgba(lc, 0.55 + act * 0.4 + pulse * 0.05);
+            if (act > 0.15) { bx.shadowBlur = 10 + act * 15; bx.shadowColor = lc; }
+            bx.stroke(); bx.shadowBlur = 0;
+          } else {
+            bx.fillStyle = '#fff'; bx.fill();
+            bx.lineWidth = 2 + act * 1.2;
+            bx.strokeStyle = hexToRgba(lc, 0.7 + act * 0.3); bx.stroke();
+          }
+
+          // Core dot
+          const coreR = nodeR * 0.28 + pulse * 1.2 + act * 1.5;
+          bx.beginPath(); bx.arc(n.x, n.y, coreR, 0, Math.PI * 2);
+          bx.fillStyle = isDark
+            ? `rgba(255,255,255,${0.55 + act * 0.35 + pulse * 0.1})`
+            : hexToRgba(lc, 0.75 + act * 0.25);
+          bx.fill();
+        });
+
+        // ANN layer labels
+        const labels = dualAnnLayerCount === 5
+          ? ['INPUT', 'HIDDEN', 'HIDDEN', 'HIDDEN', 'OUTPUT']
+          : ['INPUT', 'HIDDEN', 'HIDDEN', 'OUTPUT'];
+        const lxs = {};
+        dualAnnNodes.forEach(n => { lxs[n.layer] = n.baseX; });
+        bx.font = `600 ${BW < 768 ? 7 : 9}px "Exo 2", system-ui, sans-serif`;
+        bx.textAlign = 'center';
+        const ly = dualAnnNodes.reduce((m, n) => Math.max(m, n.baseY), 0) + 45;
+        Object.keys(lxs).forEach((l, idx) => {
+          bx.fillStyle = isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.22)';
+          bx.fillText(labels[idx] || '', lxs[l], ly);
+        });
+      }
       
       /* ── L. ARCHITECT — Professional ANN Visualization ─────────────────── */
       let annNodes = [], annPulses = [], annParticles = [], annLayerCount = 0;
@@ -5746,6 +5989,7 @@
         else if (heroBg === 'storm')   drawStorm();
         else if (heroBg === 'ball')    drawBall();
         else if (heroBg === 'ann')     drawAnn();
+        else if (heroBg === 'dual')    drawDual();
         requestAnimationFrame(drawBrain);
       }
       drawBrain();
