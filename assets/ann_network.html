@@ -1867,7 +1867,7 @@ function buildNetwork(keepWeights=false){
   const contentW=PAD_X+xStep*(total-1)+RIGHT_PAD;
   const contentH=VSP*(maxN+1)+PAD_Y*2;
   const centerOffset=Math.max(0,Math.floor((availW-contentW)/2));
-  const centerOffsetY=demoMode?0:Math.max(0,Math.floor((availH-contentH)/2));
+  const centerOffsetY=Math.max(0,Math.floor((availH-contentH)/2));
   const W=Math.max(availW, contentW);
   const H=Math.max(availH, contentH);
 
