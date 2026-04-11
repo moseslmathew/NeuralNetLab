@@ -366,6 +366,156 @@
       .light-mode .nav-item {
         color: rgba(0, 0, 0, 0.45);
       }
+
+      /* ── Dynamic Nav & Drag-Drop ── */
+      #dynamicNavItems {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 20px;
+      }
+      .nav-item {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 14px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: transparent;
+        user-select: none;
+        border: 1px solid transparent;
+      }
+      .nav-item:hover {
+        background: rgba(255,255,255,0.05);
+        border-color: rgba(255,255,255,0.08);
+      }
+      .nav-item.active {
+        background: rgba(6,182,212,0.08);
+        border: 1px solid rgba(6,182,212,0.2);
+      }
+      .nav-item.disabled {
+        opacity: 0.3;
+        filter: grayscale(0.8);
+      }
+      .drag-handle {
+        cursor: grab;
+        color: rgba(255,255,255,0.15);
+        font-size: 14px;
+        transition: color 0.2s;
+        padding-right: 4px;
+      }
+      .nav-item:hover .drag-handle {
+        color: var(--s2-gold);
+      }
+      .nav-item.dragging {
+        opacity: 0.4;
+        background: rgba(var(--s2-gold-rgb), 0.1);
+        transform: scale(0.98);
+        border: 1px dashed var(--s2-gold);
+      }
+      .nav-item.drag-over {
+        border-top: 2px solid var(--s2-gold);
+      }
+      .visibility-toggle {
+        margin-left: auto;
+        opacity: 0.4;
+        font-size: 14px;
+        transition: all 0.2s;
+        padding: 4px;
+      }
+      .nav-item:hover .visibility-toggle {
+        opacity: 1;
+      }
+      .visibility-toggle:hover {
+        transform: scale(1.2);
+        color: #06b6d4;
+      }
+      .nav-reset-btn {
+        margin-top: auto;
+        padding: 14px;
+        font-size: 9px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: var(--s2-gold);
+        border-top: 1px solid rgba(255,255,255,0.05);
+        text-align: center;
+        cursor: pointer;
+        opacity: 0.6;
+        transition: all 0.3s;
+      }
+      .nav-reset-btn:hover {
+        opacity: 1;
+        background: rgba(var(--s2-gold-rgb), 0.05);
+      }
+
+      /* ── Settings Section ── */
+      .nav-divider {
+        height: 1px;
+        background: rgba(255,255,255,0.1);
+        margin: 20px 0;
+      }
+      .nav-settings-header {
+        font-family: 'Outfit', sans-serif;
+        font-size: 10px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.4);
+        margin-bottom: 12px;
+        padding-left: 12px;
+      }
+      .settings-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 12px;
+      }
+      .settings-label {
+        font-family: 'Inter', sans-serif;
+        font-size: 13px;
+        color: rgba(255,255,255,0.8);
+      }
+      .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 36px;
+        height: 20px;
+      }
+      .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-color: rgba(15,23,42,0.6);
+        transition: .3s;
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.1);
+      }
+      .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 14px;
+        width: 14px;
+        left: 2px;
+        bottom: 2px;
+        background-color: #cbd5e1;
+        transition: .3s;
+        border-radius: 50%;
+      }
+      input:checked + .toggle-slider {
+        background-color: rgba(6,182,212,0.3);
+        border-color: rgba(6,182,212,0.5);
+      }
+      input:checked + .toggle-slider:before {
+        transform: translateX(16px);
+        background-color: #06b6d4;
+        box-shadow: 0 0 10px rgba(6,182,212,0.5);
+      }
       .light-mode .nav-item:hover {
         background: rgba(0, 0, 0, 0.04);
         color: #000;
@@ -2163,6 +2313,75 @@
         flex-direction: column;
         justify-content: center;
         box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 4px 20px rgba(0,0,0,0.2);
+        cursor: pointer;
+        transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+                    border-color 0.5s ease,
+                    box-shadow 0.5s ease,
+                    background 0.5s ease;
+      }
+      .s5-pill:hover {
+        transform: translateY(-2px);
+        border-color: rgba(6,182,212,0.32);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.08),
+                    0 8px 30px rgba(6,182,212,0.12),
+                    0 2px 8px rgba(0,0,0,0.3);
+      }
+
+      /* ── Shimmer sweep overlay ── */
+      .s5-pill::after {
+        content: '';
+        position: absolute;
+        top: 0; left: -100%; bottom: 0;
+        width: 100%;
+        background: linear-gradient(
+          105deg,
+          transparent 20%,
+          rgba(6,182,212,0.06) 35%,
+          rgba(167,139,250,0.12) 50%,
+          rgba(6,182,212,0.06) 65%,
+          transparent 80%
+        );
+        opacity: 0;
+        transition: none;
+        pointer-events: none;
+      }
+
+      /* ── Active (clicked) state ── */
+      .s5-pill.s5-pill-pop {
+        transform: translateY(-3px) scale(1.03);
+        border-color: rgba(6,182,212,0.45);
+        background: rgba(6,182,212,0.10);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.1),
+                    0 0 0 1px rgba(6,182,212,0.15),
+                    0 8px 32px rgba(6,182,212,0.18),
+                    0 0 60px -10px rgba(6,182,212,0.12);
+      }
+      .s5-pill.s5-pill-pop::after {
+        animation: s5-shimmer-sweep 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+      }
+      .s5-pill.s5-pill-pop .s5-pill-value {
+        animation: s5-value-glow 1s ease forwards;
+      }
+      .s5-pill.s5-pill-pop .s5-pill-label {
+        animation: s5-label-fade 1s ease forwards;
+      }
+
+      @keyframes s5-shimmer-sweep {
+        0%   { left: -100%; opacity: 0; }
+        10%  { opacity: 1; }
+        80%  { opacity: 1; }
+        100% { left: 100%; opacity: 0; }
+      }
+      @keyframes s5-value-glow {
+        0%   { filter: brightness(1) drop-shadow(0 0 0 transparent); }
+        25%  { filter: brightness(1.4) drop-shadow(0 0 12px rgba(6,182,212,0.5)); }
+        50%  { filter: brightness(1.2) drop-shadow(0 0 8px rgba(6,182,212,0.3)); }
+        100% { filter: brightness(1) drop-shadow(0 0 0 transparent); }
+      }
+      @keyframes s5-label-fade {
+        0%   { color: rgba(255,255,255,0.4); }
+        30%  { color: rgba(6,182,212,0.8); }
+        100% { color: rgba(255,255,255,0.4); }
       }
       .s5-pill::before {
         content: '';
@@ -4018,6 +4237,19 @@
           </button>
         </div>
       </div>
+
+      <div class="settings-group">
+        <div class="settings-label">Sound Effects</div>
+        <div class="settings-btns">
+            <div class="settings-item" style="padding: 0; width: 100%;">
+                <span class="settings-label" style="font-size: 13px; opacity: 0.7; letter-spacing: 0;">Enable Audio Events</span>
+                <label class="toggle-switch" style="margin-left: auto;">
+                    <input type="checkbox" id="soundToggle" checked onchange="toggleSound()">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+      </div>
     </div>
 
     <nav class="side-nav-panel" id="sideNav">
@@ -4025,14 +4257,17 @@
         <div class="ribbon-line"></div>
         <div class="ribbon-text">Quick Nav</div>
       </div>
-      <div class="side-nav-header">Jump To Slide</div>
-      <div class="nav-item active" onclick="goToSlide(0)"><span class="nav-label">01. Neural Intro</span></div>
-      <div class="nav-item" onclick="goToSlide(1)"><span class="nav-label">02. Historical Context</span></div>
-      <div class="nav-item" onclick="goToSlide(2)"><span class="nav-label">03. Pioneer: Hinton</span></div>
-      <div class="nav-item" onclick="goToSlide(3)"><span class="nav-label">04. The Convergence</span></div>
-      <div class="nav-item" onclick="goToSlide(4)"><span class="nav-label">05. Bio-Inspiration</span></div>
-      <div class="nav-item" onclick="goToSlide(5)"><span class="nav-label">06. Iterative Learning</span></div>
-      <div class="nav-item" onclick="goToSlide(6)"><span class="nav-label">07. ANN Architecture</span></div>
+      <div class="side-nav-header" style="display:flex; justify-content:space-between; align-items:center;">
+        <span>Quick Manager</span>
+        <span style="font-size:9px; opacity:0.5; font-weight:normal;">DRAG TO REORDER</span>
+      </div>
+      <div id="dynamicNavItems">
+        <!-- Dynamically injected -->
+      </div>
+      
+      <div class="nav-reset-btn" onclick="resetSlideState()">
+        Reset Order & Visibility
+      </div>
     </nav>
 
     <div class="nav-arrows">
@@ -4044,7 +4279,7 @@
     <!-- ── 10. MAIN CONTENT SLIDER ────────────────────────────────────────────── -->
     <div id="sliderContainer" class="slider-container">
       <!-- SLIDE 01: NEURAL NETWORK INTRO (HERO) -->
-      <section class="scene">
+      <section class="scene" id="slideOne">
         <canvas id="brain"></canvas>
 
         <!-- Corner slide number -->
@@ -4222,169 +4457,6 @@
         </div>
       </section>
 
-
-      <!-- SLIDE 04: THE THREE PILLARS (DATA, COMPUTE, ALGORITHMS) -->
-      <section class="slide-four" id="slideFour">
-        <div class="s4-header premium-header">
-           <div class="year-badge">EVOLUTION</div>
-           <h2 class="s4-title">So, What Changed?</h2>
-           <p class="s4-subtitle">Three factors that converged to enable the modern AI era</p>
-        </div>
-
-        <div class="s4-layout">
-          <!-- LEFT PANE: TABS -->
-          <div class="s4-nav-pane">
-            <div class="s4-tab active" onclick="switchS4Tab(0)">
-              <div class="s4-tab-number-circle"><span class="s4-tab-number">01</span></div>
-              <div class="s4-tab-content">
-                <span class="s4-tab-title">Massive Data</span>
-              </div>
-            </div>
-            <div class="s4-tab" onclick="switchS4Tab(1)">
-              <div class="s4-tab-number-circle"><span class="s4-tab-number">02</span></div>
-              <div class="s4-tab-content">
-                <span class="s4-tab-title">GPU Power</span>
-              </div>
-            </div>
-            <div class="s4-tab" onclick="switchS4Tab(2)">
-              <div class="s4-tab-number-circle"><span class="s4-tab-number">03</span></div>
-              <div class="s4-tab-content">
-                <span class="s4-tab-title">Transformers</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="s4-pane-divider"></div>
-
-          <!-- RIGHT PANE: DETAIL -->
-          <div class="s4-detail-pane">
-            <!-- Detail 0: Massive Data -->
-            <div class="s4-detail-content active" id="s4-detail-0">
-              <div class="s4-detail-header">
-                <svg class="s4-detail-icon" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2C6.48 2 2 4.24 2 7c0 2.27 3.32 4.26 7.84 4.84.45.06.91.1 1.38.13.91.06 1.84.09 2.78.09.94 0 1.87-.03 2.78-.09.47-.03.93-.07 1.38-.13C20.68 11.26 24 9.27 24 7c0-2.76-4.48-5-10-5zm0 2c4.42 0 8 1.57 8 3.5S16.42 11 12 11s-8-1.57-8-3.5S7.58 4 12 4zm0 9c-.93 0-1.85-.03-2.75-.08-.46-.03-.91-.07-1.35-.13-4.52-.58-7.9-2.58-7.9-4.88v2.09c0 2.76 4.48 5 10 5s10-2.24 10-5V9.91c0 2.3-3.38 4.3-7.9 4.88-.44.06-.89.1-1.35.13-.9.05-1.82.08-2.75.08zm0 5c-.93 0-1.85-.03-2.75-.08-.46-.03-.91-.06-1.35-.12-4.52-.58-7.9-2.58-7.9-4.89v2.09c0 2.76 4.48 5 10 5s10-2.24 10-5v-2.09c0 2.31-3.38 4.31-7.9 4.89-.44.06-.89.09-1.35.12-.9.05-1.82.08-2.75.08z"/>
-                </svg>
-                <div class="s4-detail-title">Massive Data</div>
-              </div>
-              <div class="s4-detail-body">
-                <span class="s4-detail-highlight">An Ocean of Data</span>
-                <span class="s4-detail-subtext">The internet became the world's largest training set</span>
-                <p>Models are only as good as the data they learn from — and suddenly there was an ocean of it.</p>
-                <p>Billions of text documents, images, and videos became available for training. Curated datasets like <strong>Common Crawl</strong>, <strong>Wikipedia dumps</strong>, and <strong>ImageNet</strong> gave researchers the raw material to build ever more powerful models.</p>
-                <p>Instead of manually programming rules, we fed the machines human history, and they learned the patterns.</p>
-              </div>
-            </div>
-
-            <!-- Detail 1: GPU Power -->
-            <div class="s4-detail-content" id="s4-detail-1">
-              <div class="s4-detail-header">
-                <svg class="s4-detail-icon" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M21 9V7h-2V5c0-1.1-.9-2-2-2H7c-1.1 0-2 .9-2 2v2H3v2h2v2H3v2h2v2H3v2h2v2c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2v-2h2v-2h-2v-2h2v-2h-2V9h2zm-4 10H7V5h10v14zM9 7h6v2H9V7zm0 4h6v2H9v-2zm0 4h6v2H9v-2z"/>
-                </svg>
-                <div class="s4-detail-title">GPU Power</div>
-                <button class="gpu-demo-btn gpu-demo-icon-btn" onclick="openGpuDemo()" title="GPU Illustration">
-                  <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M6 6h12v12H6V6m-2-2v16h16V4H4zm8-2h-2v2h2V2zm4 0h-2v2h2V2zM8 2H6v2h2V2zM2 10v2h2v-2H2zm0 4v2h2v-2H2zM2 6v2h2V6H2zm18 4v2h2v-2h-2zm0 4v2h2v-2h-2zm0-8v2h2V6h-2zm-6 14h2v2h-2v-2zm-4 0h2v2h-2v-2zm-4 0h2v2H6v-2z"/>
-                  </svg>
-                </button>
-              </div>
-              <div class="s4-detail-body">
-                <span class="s4-detail-highlight">From Gaming to AI</span>
-                <span class="s4-detail-subtext">NVIDIA's CUDA platform (2007) turned gaming graphics cards into parallel computing monsters.</span>
-                <p>Neural networks require an astronomical amount of simple matrix multiplication. Central Processing Units (CPUs) were too slow, handling tasks one at a time.</p>
-                <p>Graphics Processing Units (GPUs) were built to render thousands of pixels simultaneously. Researchers realized this parallel architecture was <strong>perfect</strong> for AI.</p>
-                <p><strong>1000x faster:</strong> By 2012, AlexNet trained on two gaming GPUs crushed the ImageNet competition, proving hardware was no longer the bottleneck.</p>
-              </div>
-            </div>
-
-            <!-- Detail 2: Transformers -->
-            <div class="s4-detail-content" id="s4-detail-2">
-              <div class="s4-detail-header">
-                <svg class="s4-detail-icon" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M11 21h-1l1-7H7.5c-.58 0-.57-.32-.38-.66C7.67 12.16 9.4 9.06 12.5 3h1l-1 7h3.5c.49 0 .56.33.47.51l-.07.15C12.96 17.55 11 21 11 21z"/>
-                </svg>
-                <div class="s4-detail-title">Transformers</div>
-              </div>
-              <div class="s4-detail-body">
-                <span class="s4-detail-highlight">"Attention Is All You Need"</span>
-                <span class="s4-detail-subtext">2017 — The Google Research paper that started it all</span>
-                <p>This single algorithm is the backbone of <strong>GPT</strong>, <strong>BERT</strong>, and virtually every large language model you've heard of.</p>
-                <p>Before Transformers, models processed text sequentially, one word at a time, often forgetting the beginning of a sentence by the time they reached the end.</p>
-                <p>The <strong>self-attention mechanism</strong> changed everything. It allows the model to look at <em>all parts of the input simultaneously</em>, dynamically deciding which words are most relevant to each other, unlocking unprecedented logic, reasoning, and context understanding.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-
-      <!-- SLIDE 05: BIOLOGICAL INSPIRATION (NEURON STRUCTURE) -->
-      <section class="slide-five" id="slideFive">
-        <div class="s5-bg"></div>
-        <div class="s5-content">
-
-          <!-- Compact header: title left, stats right -->
-          <div class="s5-header">
-            <div class="s5-header-left">
-              <div class="s5-kicker">
-                The Biological Inspiration
-                <span class="s5-kicker-sep"></span>
-                <span class="s5-kicker-sub">We just reverse-engineered the idea.</span>
-              </div>
-              <h2 class="s5-title">Nature Built It <span class="s5-title-accent">First.</span></h2>
-            </div>
-            <div class="s5-stat-pills">
-              <div class="s5-pill">
-                <div class="s5-pill-value">86B</div>
-                <div class="s5-pill-label">neurons</div>
-              </div>
-              <div class="s5-pill">
-                <div class="s5-pill-value">7,000</div>
-                <div class="s5-pill-label">connections per neuron</div>
-              </div>
-              <div class="s5-pill">
-                <div class="s5-pill-value">100-500T</div>
-                <div class="s5-pill-label">total connections</div>
-              </div>
-            </div>
-          </div>
-
-
-          <!-- Two-column visual area -->
-          <div class="s5-visual-row">
-
-            <!-- Left: Micro -->
-            <div class="s5-neuron-col">
-              <div class="s5-col-header">Micro: The Cell</div>
-              <div class="s5-img-frame" style="background:#000;">
-                <video id="neuronVideo" src="assets/Neuron%20Firing.mp4" loop playsinline title="Biological neuron firing" style="cursor: pointer;" onclick="toggleNeuronVideo(event)"></video>
-                <button id="neuronPlayBtn" class="s5-video-btn" onclick="toggleNeuronVideo(event)" aria-label="Play/Pause Video">▶</button>
-              </div>
-              <div class="s5-insight-card">
-                <div class="s5-insight-icon">⚡</div>
-                <p class="s5-insight-text">A tiny biological switch. Signals enter via dendrites, and if the electrical pulse is strong enough, the neuron "fires" an output.</p>
-              </div>
-            </div>
-
-            <!-- Right: Macro -->
-            <div class="s5-brain-col">
-              <div class="s5-col-header">Macro: The Architecture</div>
-              <div class="s5-brain-card">
-                <img src="assets/brain_network.png" alt="Neural network visualization" />
-              </div>
-              <div class="s5-insight-card">
-                <div class="s5-insight-icon">🧠</div>
-                <p class="s5-insight-text">Intelligence emerges from the <strong>network</strong> — billions of neurons forming 100 trillion connections to process reality.</p>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- Bottom accent bar -->
-          <div class="s5-accent-bar"></div>
-        </div>
-      </section>
-
       <!-- SLIDE 06: ITERATIVE LEARNING (HOW AI TRAINS) -->
       <section class="slide-six" id="slideSix">
         <div class="s6-content">
@@ -4493,6 +4565,76 @@
 
       </section>
 
+
+
+      <!-- SLIDE 05: BIOLOGICAL INSPIRATION (NEURON STRUCTURE) -->
+      <section class="slide-five" id="slideFive">
+        <div class="s5-bg"></div>
+        <div class="s5-content">
+
+          <!-- Compact header: title left, stats right -->
+          <div class="s5-header">
+            <div class="s5-header-left">
+              <div class="s5-kicker">
+                The Biological Inspiration
+                <span class="s5-kicker-sep"></span>
+                <span class="s5-kicker-sub">We just reverse-engineered the idea.</span>
+              </div>
+              <h2 class="s5-title">Nature Built It <span class="s5-title-accent">First.</span></h2>
+            </div>
+            <div class="s5-stat-pills">
+              <div class="s5-pill">
+                <div class="s5-pill-value">86B</div>
+                <div class="s5-pill-label">neurons</div>
+              </div>
+              <div class="s5-pill">
+                <div class="s5-pill-value">7,000</div>
+                <div class="s5-pill-label">connections per neuron</div>
+              </div>
+              <div class="s5-pill">
+                <div class="s5-pill-value">100-500T</div>
+                <div class="s5-pill-label">total connections</div>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- Two-column visual area -->
+          <div class="s5-visual-row">
+
+            <!-- Left: Micro -->
+            <div class="s5-neuron-col">
+              <div class="s5-col-header">Micro: The Cell</div>
+              <div class="s5-img-frame" style="background:#000;">
+                <video id="neuronVideo" src="assets/Neuron%20Firing.mp4" loop playsinline title="Biological neuron firing" style="cursor: pointer;" onclick="toggleNeuronVideo(event)"></video>
+                <button id="neuronPlayBtn" class="s5-video-btn" onclick="toggleNeuronVideo(event)" aria-label="Play/Pause Video">▶</button>
+              </div>
+              <div class="s5-insight-card">
+                <div class="s5-insight-icon">⚡</div>
+                <p class="s5-insight-text">A tiny biological switch. Signals enter via dendrites, and if the electrical pulse is strong enough, the neuron "fires" an output.</p>
+              </div>
+            </div>
+
+            <!-- Right: Macro -->
+            <div class="s5-brain-col">
+              <div class="s5-col-header">Macro: The Architecture</div>
+              <div class="s5-brain-card">
+                <img src="assets/brain_network.png" alt="Neural network visualization" />
+              </div>
+              <div class="s5-insight-card">
+                <div class="s5-insight-icon">🧠</div>
+                <p class="s5-insight-text">Intelligence emerges from the <strong>network</strong> — billions of neurons forming 100 trillion connections to process reality.</p>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Bottom accent bar -->
+          <div class="s5-accent-bar"></div>
+        </div>
+      </section>
+
+
       <!-- SLIDE 07: ANN ARCHITECTURE -->
       <section class="slide-seven" id="slideSeven">
         <iframe
@@ -4502,6 +4644,103 @@
           allowtransparency="true"
         ></iframe>
       </section>
+
+
+      <!-- SLIDE 04: THE THREE PILLARS (DATA, COMPUTE, ALGORITHMS) -->
+      <section class="slide-four" id="slideFour">
+        <div class="s4-header premium-header">
+           <div class="year-badge">EVOLUTION</div>
+           <h2 class="s4-title">So, What Changed?</h2>
+           <p class="s4-subtitle">Three factors that converged to enable the modern AI era</p>
+        </div>
+
+        <div class="s4-layout">
+          <!-- LEFT PANE: TABS -->
+          <div class="s4-nav-pane">
+            <div class="s4-tab active" onclick="switchS4Tab(0)">
+              <div class="s4-tab-number-circle"><span class="s4-tab-number">01</span></div>
+              <div class="s4-tab-content">
+                <span class="s4-tab-title">Massive Data</span>
+              </div>
+            </div>
+            <div class="s4-tab" onclick="switchS4Tab(1)">
+              <div class="s4-tab-number-circle"><span class="s4-tab-number">02</span></div>
+              <div class="s4-tab-content">
+                <span class="s4-tab-title">GPU Power</span>
+              </div>
+            </div>
+            <div class="s4-tab" onclick="switchS4Tab(2)">
+              <div class="s4-tab-number-circle"><span class="s4-tab-number">03</span></div>
+              <div class="s4-tab-content">
+                <span class="s4-tab-title">Transformers</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="s4-pane-divider"></div>
+
+          <!-- RIGHT PANE: DETAIL -->
+          <div class="s4-detail-pane">
+            <!-- Detail 0: Massive Data -->
+            <div class="s4-detail-content active" id="s4-detail-0">
+              <div class="s4-detail-header">
+                <svg class="s4-detail-icon" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C6.48 2 2 4.24 2 7c0 2.27 3.32 4.26 7.84 4.84.45.06.91.1 1.38.13.91.06 1.84.09 2.78.09.94 0 1.87-.03 2.78-.09.47-.03.93-.07 1.38-.13C20.68 11.26 24 9.27 24 7c0-2.76-4.48-5-10-5zm0 2c4.42 0 8 1.57 8 3.5S16.42 11 12 11s-8-1.57-8-3.5S7.58 4 12 4zm0 9c-.93 0-1.85-.03-2.75-.08-.46-.03-.91-.07-1.35-.13-4.52-.58-7.9-2.58-7.9-4.88v2.09c0 2.76 4.48 5 10 5s10-2.24 10-5V9.91c0 2.3-3.38 4.3-7.9 4.88-.44.06-.89.1-1.35.13-.9.05-1.82.08-2.75.08zm0 5c-.93 0-1.85-.03-2.75-.08-.46-.03-.91-.06-1.35-.12-4.52-.58-7.9-2.58-7.9-4.89v2.09c0 2.76 4.48 5 10 5s10-2.24 10-5v-2.09c0 2.31-3.38 4.31-7.9 4.89-.44.06-.89.09-1.35.12-.9.05-1.82.08-2.75.08z"/>
+                </svg>
+                <div class="s4-detail-title">Massive Data</div>
+              </div>
+              <div class="s4-detail-body">
+                <span class="s4-detail-highlight">An Ocean of Data</span>
+                <span class="s4-detail-subtext">The internet became the world's largest training set</span>
+                <p>Models are only as good as the data they learn from — and suddenly there was an ocean of it.</p>
+                <p>Billions of text documents, images, and videos became available for training. Curated datasets like <strong>Common Crawl</strong>, <strong>Wikipedia dumps</strong>, and <strong>ImageNet</strong> gave researchers the raw material to build ever more powerful models.</p>
+                <p>Instead of manually programming rules, we fed the machines human history, and they learned the patterns.</p>
+              </div>
+            </div>
+
+            <!-- Detail 1: GPU Power -->
+            <div class="s4-detail-content" id="s4-detail-1">
+              <div class="s4-detail-header">
+                <svg class="s4-detail-icon" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M21 9V7h-2V5c0-1.1-.9-2-2-2H7c-1.1 0-2 .9-2 2v2H3v2h2v2H3v2h2v2H3v2h2v2c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2v-2h2v-2h-2v-2h2v-2h-2V9h2zm-4 10H7V5h10v14zM9 7h6v2H9V7zm0 4h6v2H9v-2zm0 4h6v2H9v-2z"/>
+                </svg>
+                <div class="s4-detail-title">GPU Power</div>
+                <button class="gpu-demo-btn gpu-demo-icon-btn" onclick="openGpuDemo()" title="GPU Illustration">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6 6h12v12H6V6m-2-2v16h16V4H4zm8-2h-2v2h2V2zm4 0h-2v2h2V2zM8 2H6v2h2V2zM2 10v2h2v-2H2zm0 4v2h2v-2H2zM2 6v2h2V6H2zm18 4v2h2v-2h-2zm0 4v2h2v-2h-2zm0-8v2h2V6h-2zm-6 14h2v2h-2v-2zm-4 0h2v2h-2v-2zm-4 0h2v2H6v-2z"/>
+                  </svg>
+                </button>
+              </div>
+              <div class="s4-detail-body">
+                <span class="s4-detail-highlight">From Gaming to AI</span>
+                <span class="s4-detail-subtext">NVIDIA's CUDA platform (2007) turned gaming graphics cards into parallel computing monsters.</span>
+                <p>Neural networks require an astronomical amount of simple matrix multiplication. A modern CPU has <strong>8 to 24 powerful cores</strong> built for complex, multi-step logic, making them too slow for AI because they handle these tasks sequentially.</p>
+                <p>A modern AI GPU, however, packs <strong>thousands of smaller cores (often 10,000+)</strong>. While not built for complex logic, they calculate thousands of simple operations simultaneously. This massive parallel architecture is <strong>perfect</strong> for AI.</p>
+                <p><strong>1000x faster:</strong> By 2012, AlexNet trained on two gaming GPUs crushed the ImageNet competition, proving hardware was no longer the bottleneck.</p>
+              </div>
+            </div>
+
+            <!-- Detail 2: Transformers -->
+            <div class="s4-detail-content" id="s4-detail-2">
+              <div class="s4-detail-header">
+                <svg class="s4-detail-icon" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M11 21h-1l1-7H7.5c-.58 0-.57-.32-.38-.66C7.67 12.16 9.4 9.06 12.5 3h1l-1 7h3.5c.49 0 .56.33.47.51l-.07.15C12.96 17.55 11 21 11 21z"/>
+                </svg>
+                <div class="s4-detail-title">Transformers</div>
+              </div>
+              <div class="s4-detail-body">
+                <span class="s4-detail-highlight">"Attention Is All You Need"</span>
+                <span class="s4-detail-subtext">2017 — The Google Research paper that started it all</span>
+                <p>This single algorithm is the backbone of <strong>GPT</strong>, <strong>BERT</strong>, and virtually every large language model you've heard of.</p>
+                <p>Before Transformers, models processed text sequentially, one word at a time, often forgetting the beginning of a sentence by the time they reached the end.</p>
+                <p>The <strong>self-attention mechanism</strong> changed everything. It allows the model to look at <em>all parts of the input simultaneously</em>, dynamically deciding which words are most relevant to each other, unlocking unprecedented logic, reasoning, and context understanding.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
     </div>
 
     <!-- ── 11. MODAL COMPONENTS ────────────────────────────────────────────────── -->
@@ -4658,7 +4897,7 @@
         </div>
 
         <div class="cgd-insight">
-          CPUs handle complex tasks sequentially. GPUs handle thousands of simple operations in parallel — which is exactly what AI training requires. For example, the NVIDIA A100 packs 6,912 CUDA cores and 432 Tensor cores to accelerate these computations at scale.
+          A CPU has a few powerful cores (e.g., 8 to 24) designed to handle highly complex logic sequentially. In contrast, a modern AI GPU packs an army of thousands of simpler cores. Since AI needs millions of simple matrix operations rather than a few complex ones, GPUs can compute them all simultaneously.
         </div>
       </div>
     </div>
@@ -5839,92 +6078,184 @@
       presentationSections[0].style.visibility = "visible";
       presentationSections[0].style.transform = "scale(1)";
 
+      // --- Dynamic Slide Management ---
+      const SLIDE_METADATA = {
+        'slideOne': 'Neural Intro',
+        'slideTwo': 'Historical Context',
+        'slideThree': 'Pioneer: Hinton',
+        'slideSix': 'Iterative Learning',
+        'slideFive': 'Bio-Inspiration',
+        'slideSeven': 'ANN Architecture',
+        'slideFour': 'The Convergence'
+      };
+
+      let slideState = JSON.parse(localStorage.getItem('ann_slide_state')) || [
+        { id: 'slideOne', enabled: true },
+        { id: 'slideTwo', enabled: true },
+        { id: 'slideThree', enabled: true },
+        { id: 'slideSix', enabled: true },
+        { id: 'slideFive', enabled: true },
+        { id: 'slideSeven', enabled: true },
+        { id: 'slideFour', enabled: true }
+      ];
+
+      function saveSlideState() {
+        localStorage.setItem('ann_slide_state', JSON.stringify(slideState));
+        renderQuickNav();
+        updateNavigationButtons();
+      }
+
+      function resetSlideState() {
+        localStorage.removeItem('ann_slide_state');
+        location.reload();
+      }
+
+      function toggleSlideVisibility(id, e) {
+        if (e) e.stopPropagation();
+        const slide = slideState.find(s => s.id === id);
+        if (slide) {
+          // Prevent disabling all slides
+          const enabledCount = slideState.filter(s => s.enabled).length;
+          if (slide.enabled && enabledCount <= 1) return;
+          
+          slide.enabled = !slide.enabled;
+          saveSlideState();
+        }
+      }
+
+      function renderQuickNav() {
+        const container = document.getElementById('dynamicNavItems');
+        if (!container) return;
+        container.innerHTML = '';
+
+        const activeSlides = getActiveSlides();
+        const currentId = activeSlides[currentSlideIdx]?.id;
+
+        slideState.forEach((item, index) => {
+          const div = document.createElement('div');
+          div.className = `nav-item ${!item.enabled ? 'disabled' : ''} ${item.id === currentId ? 'active' : ''}`;
+          div.draggable = true;
+          div.dataset.id = item.id;
+          
+          // Drag events
+          div.ondragstart = (e) => {
+            e.target.classList.add('dragging');
+            e.dataTransfer.setData('text/plain', index);
+          };
+          div.ondragend = (e) => e.target.classList.remove('dragging');
+          div.ondragover = (e) => {
+            e.preventDefault();
+            div.classList.add('drag-over');
+          };
+          div.ondragleave = () => div.classList.remove('drag-over');
+          div.ondrop = (e) => {
+            e.preventDefault();
+            div.classList.remove('drag-over');
+            const fromIndex = parseInt(e.dataTransfer.getData('text/plain'));
+            const toIndex = index;
+            const movedItem = slideState.splice(fromIndex, 1)[0];
+            slideState.splice(toIndex, 0, movedItem);
+            saveSlideState();
+          };
+
+          div.onclick = () => {
+             if (!item.enabled) return;
+             const newIndex = getActiveSlides().findIndex(s => s.id === item.id);
+             goToSlide(newIndex);
+          };
+
+          div.innerHTML = `
+            <span class="drag-handle">⠿</span>
+            <span class="nav-label">${String(index + 1).padStart(2, '0')}. ${SLIDE_METADATA[item.id]}</span>
+            <span class="visibility-toggle" onclick="toggleSlideVisibility('${item.id}', event)">
+               ${item.enabled ? '👁' : '✕'}
+            </span>
+          `;
+          container.appendChild(div);
+        });
+      }
+
+      function getActiveSlides() {
+        const orderMap = slideState.reduce((acc, s, i) => { acc[s.id] = i; return acc; }, {});
+        return slideState
+          .filter(s => s.enabled)
+          .map(s => document.getElementById(s.id))
+          .filter(el => el);
+      }
+
       function goToSlide(index) {
-        // Auto-close quick nav on selection
+        const activeSlides = getActiveSlides();
         const nav = document.getElementById("sideNav");
         if (nav) nav.classList.remove("open");
 
-        if (
-          index < 0 ||
-          index >= presentationSections.length ||
-          isSlideAnimating
-        )
-          return;
-        if (index === currentSlideIdx) return;
+        if (index < 0 || index >= activeSlides.length || isSlideAnimating) return;
+        if (index === currentSlideIdx && activeSlides[index].classList.contains('active-slide')) return;
+        
         isSlideAnimating = true;
-
-        const outgoing = presentationSections[currentSlideIdx];
-        const incoming = presentationSections[index];
-        const direction = index > currentSlideIdx ? 1 : -1; // 1 = forward, -1 = backward
+        const outgoing = document.querySelector('.active-slide');
+        const incoming = activeSlides[index];
+        const direction = index > currentSlideIdx ? 1 : -1;
 
         currentSlideIdx = index;
 
-        // Keynote Magic Move: crossfade with depth/scale shift
         if (typeof syncSlider === "function") syncSlider(index);
 
         const tl = gsap.timeline({
           onComplete: () => {
-            outgoing.classList.remove("active-slide");
-            gsap.set(outgoing, { visibility: "hidden", zIndex: 0 });
+            if (outgoing) outgoing.classList.remove("active-slide");
+            if (outgoing) gsap.set(outgoing, { visibility: "hidden", zIndex: 0 });
             isSlideAnimating = false;
           },
         });
 
-        // Prepare incoming slide
         incoming.classList.add("active-slide");
         gsap.set(incoming, {
           visibility: "visible",
           opacity: 0,
-          scale: direction > 0 ? 1.08 : 0.92, // forward = zoom in from larger, back = zoom in from smaller
+          scale: direction > 0 ? 1.08 : 0.92,
           zIndex: 3,
         });
-        gsap.set(outgoing, { zIndex: 2 });
+        if (outgoing) gsap.set(outgoing, { zIndex: 2 });
 
-        // Outgoing: scale slightly & fade
-        tl.to(
-          outgoing,
-          {
+        if (outgoing) {
+          tl.to(outgoing, {
             opacity: 0,
-            scale: direction > 0 ? 0.92 : 1.08, // forward = shrink away, back = grow away
+            scale: direction > 0 ? 0.92 : 1.08,
             duration: 0.8,
             ease: "power2.inOut",
             force3D: true,
-          },
-          0
-        );
+          }, 0);
+        }
 
-        // Incoming: settle to normal & fade in
-        tl.to(
-          incoming,
-          {
-            opacity: 1,
-            scale: 1,
-            duration: 0.8,
-            ease: "power2.inOut",
-            force3D: true,
-          },
-          0.1
-        ); // tiny stagger for cinematic overlap
+        tl.to(incoming, {
+          opacity: 1,
+          scale: 1,
+          duration: 0.8,
+          ease: "power2.inOut",
+          force3D: true,
+        }, 0.1);
 
-        // Trigger entrance animations for the incoming slide
         incoming.classList.add("in-view");
+        
+        // Update UI
+        const progress = ((index + 1) / activeSlides.length) * 100;
+        document.getElementById("slideCounter").innerText = `${index + 1} / ${activeSlides.length}`;
+        document.querySelectorAll('.hero-slide-num').forEach(el => {
+            el.innerHTML = `${String(index + 1).padStart(2, '0')} &nbsp;/&nbsp; ${String(activeSlides.length).padStart(2, '0')}`;
+        });
 
-        // Update progress bar & counter
-        const progress = ((index + 1) / presentationSections.length) * 100;
-        document.getElementById("slideCounter").innerText = `${index + 1} / ${presentationSections.length}`;
-
-        // Update navigation buttons
-        document.getElementById("prevBtn").disabled = currentSlideIdx === 0;
-        document.getElementById("nextBtn").disabled =
-          currentSlideIdx === presentationSections.length - 1;
+        updateNavigationButtons();
+        renderQuickNav();
       }
 
-      document
-        .getElementById("prevBtn")
-        .addEventListener("click", () => goToSlide(currentSlideIdx - 1));
-      document
-        .getElementById("nextBtn")
-        .addEventListener("click", () => goToSlide(currentSlideIdx + 1));
+      function updateNavigationButtons() {
+        const activeSlides = getActiveSlides();
+        document.getElementById("prevBtn").disabled = currentSlideIdx === 0;
+        document.getElementById("nextBtn").disabled = currentSlideIdx === activeSlides.length - 1;
+      }
+
+      document.getElementById("prevBtn").addEventListener("click", () => goToSlide(currentSlideIdx - 1));
+      document.getElementById("nextBtn").addEventListener("click", () => goToSlide(currentSlideIdx + 1));
 
       // Scroll listener returned with debounce protection
       // REMOVED slide-change-on-scroll to allow vertical scrolling within slides
@@ -6216,31 +6547,17 @@
 
       // Slide 6 "How AI Learns" Stepper Logic
       let s6CurrentStep = 0;
-      const s6TotalSteps = 6;
+      let soundEnabled = true;
+
+      function toggleSound() {
+        soundEnabled = document.getElementById('soundToggle').checked;
+      }
 
       function playRevealSound() {
-        if (!window.AudioContext && !window.webkitAudioContext) return;
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        const ctx = new AudioContext();
-        
-        const osc = ctx.createOscillator();
-        const gainNode = ctx.createGain();
-        
-        // A soft, high-pitched sine wave (glassy/digital feel)
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(880, ctx.currentTime); // A5
-        osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.08); // Slide up to A6
-        
-        // Envelope: quick attack, slow fade
-        gainNode.gain.setValueAtTime(0, ctx.currentTime);
-        gainNode.gain.linearRampToValueAtTime(0.15, ctx.currentTime + 0.02);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
-        
-        osc.connect(gainNode);
-        gainNode.connect(ctx.destination);
-        
-        osc.start(ctx.currentTime);
-        osc.stop(ctx.currentTime + 0.5);
+        if (!soundEnabled) return;
+        const audio = new Audio('assets/click_sound.wav');
+        audio.volume = 0.8;
+        audio.play().catch(e => console.warn('Reveal sound playback failed:', e));
       }
 
       function s6Step(delta) {
@@ -6340,6 +6657,25 @@
         }
       }
 
+      // ── Stat pill pop-highlight & static sound on click ──
+      document.querySelectorAll('.s5-pill').forEach(pill => {
+        pill.addEventListener('click', () => {
+          // Deactivate any other pill first
+          document.querySelectorAll('.s5-pill.s5-pill-pop').forEach(p => p.classList.remove('s5-pill-pop'));
+          void pill.offsetWidth;
+          pill.classList.add('s5-pill-pop');
+          
+          // Play the user-provided WAV asset
+          if (soundEnabled) {
+            const clickAudio = new Audio('assets/click_sound.wav');
+            clickAudio.volume = 0.8;
+            clickAudio.play().catch(e => console.warn('Pill click audio failed:', e));
+          }
+
+          setTimeout(() => pill.classList.remove('s5-pill-pop'), 1800);
+        });
+      });
+
       function toggleSideNav(e) {
         if (e) e.stopPropagation();
         document.getElementById("sideNav").classList.toggle("open");
@@ -6388,6 +6724,10 @@
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') closePillPopup();
       });
+
+      // Init dynamic nav components
+      renderQuickNav();
+      updateNavigationButtons();
     </script>
   </body>
 </html>
