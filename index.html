@@ -5672,6 +5672,10 @@
       /* ── D. MAIN RENDER LOOP ── */
       let bt = 0;
       function drawBrain() {
+        if (!BW || !BH) {
+          requestAnimationFrame(drawBrain);
+          return;
+        }
         bt++;
         bx.clearRect(0, 0, BW, BH);
         if      (heroBg === 'neural')  drawNeural();
