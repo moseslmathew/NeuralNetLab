@@ -4342,6 +4342,10 @@
                 <div class="s5-pill-value">7,000</div>
                 <div class="s5-pill-label">connections per neuron</div>
               </div>
+              <div class="s5-pill">
+                <div class="s5-pill-value">100-500T</div>
+                <div class="s5-pill-label">total connections</div>
+              </div>
             </div>
           </div>
 
@@ -4353,7 +4357,7 @@
             <div class="s5-neuron-col">
               <div class="s5-col-header">Micro: The Cell</div>
               <div class="s5-img-frame" style="background:#000;">
-                <video id="neuronVideo" src="assets/Neuron%20Firing.mp4" loop playsinline title="Biological neuron firing"></video>
+                <video id="neuronVideo" src="assets/Neuron%20Firing.mp4" loop playsinline title="Biological neuron firing" style="cursor: pointer;" onclick="toggleNeuronVideo(event)"></video>
                 <button id="neuronPlayBtn" class="s5-video-btn" onclick="toggleNeuronVideo(event)" aria-label="Play/Pause Video">▶</button>
               </div>
               <div class="s5-insight-card">
