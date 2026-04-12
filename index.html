@@ -906,22 +906,7 @@
         color: rgba(0, 0, 0, 0.5);
         border-top-color: rgba(0, 0, 0, 0.06);
       }
-      /* ── HERO: slide number corner label ── */
-      .hero-slide-num {
-        position: absolute;
-        top: 34px;
-        right: clamp(32px, 6vw, 90px);
-        font-family: var(--font-accent);
-        font-size: 10px;
-        font-weight: 700;
-        letter-spacing: 3.5px;
-        color: rgba(255, 255, 255, 0.16);
-        z-index: 20;
-        user-select: none;
-        animation: fadeIn 1s ease forwards 2.2s;
-        opacity: 0;
-      }
-      .light-mode .hero-slide-num { color: rgba(0, 0, 0, 0.12); }
+
 
 
 
@@ -4602,8 +4587,7 @@
       <section class="scene" id="slideOne">
         <canvas id="brain"></canvas>
 
-        <!-- Corner slide number -->
-        <div class="hero-slide-num">01 &nbsp;/&nbsp; 07</div>
+
 
         <div class="ui ui-left">
           <div class="title-wrap">
@@ -7150,9 +7134,7 @@
         // Update UI
         const progress = ((index + 1) / activeSlides.length) * 100;
         document.getElementById("slideCounter").innerText = `${index + 1} / ${activeSlides.length}`;
-        document.querySelectorAll('.hero-slide-num').forEach(el => {
-            el.innerHTML = `${String(index + 1).padStart(2, '0')} &nbsp;/&nbsp; ${String(activeSlides.length).padStart(2, '0')}`;
-        });
+
 
         updateNavigationButtons();
         renderQuickNav();
