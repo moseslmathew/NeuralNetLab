@@ -579,9 +579,9 @@
         pointer-events: none;
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: flex-end;
         align-items: center;
-        padding-bottom: 50px; /* Reduced to avoid overlapping with top-left menu */
+        padding-bottom: 15vh;
       }
       .title-wrap {
         text-align: center;
@@ -595,6 +595,7 @@
       .ui.ui-left {
         align-items: flex-start;
         padding-left: 8vw;
+        justify-content: flex-end;
       }
       .ui.ui-left .title-wrap {
         width: auto;
@@ -5480,7 +5481,7 @@
 
         layers.forEach((count, li) => {
           const totalH = (count - 1) * nodeSpacingY;
-          const startY = (BH - totalH) / 2;
+          const startY = (BH * 0.85 - totalH) / 2;
           for (let j = 0; j < count; j++) {
             dualAnnNodes.push({
               x: annLeft + li * spacingX,
@@ -5506,7 +5507,7 @@
         // ═══════════════════════════════════════
         //  3D Ball (Right Side, behind ANN)
         // ═══════════════════════════════════════
-        const ballCx = BW * 0.755, ballCy = BH * 0.45;
+        const ballCx = BW * 0.755, ballCy = BH * 0.38;
         const rotX = bt * 0.0018, rotY = bt * 0.0025;
         const baseRadius = Math.min(BW * 0.35, BH) * 0.35;
         const bPulse = 0.92 + Math.sin(bt * 0.006) * 0.08;
