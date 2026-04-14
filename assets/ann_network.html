@@ -677,6 +677,7 @@ function setStyle(s){
 let rep='indefinite', fz='freeze', pc=0, particleSys=null;
 let demoMode=false, demoVehicleIdx=0, colorMode=false, mnistSize=16, vehSize=4, pixelMatrixView=false;
 
+
 function el(tag,attrs){return _el(tag,attrs);}
 function smil(tag,attrs){return _el(tag,attrs);}
 function hexToRgb(h){return[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)].join(',');}
@@ -913,9 +914,7 @@ function addDot(svg,ax,ay,bx,by,color,strength,ws,wd,tc){
   const t0=+(ws/tc).toFixed(7),t1=+((ws+wd)/tc).toFixed(7),e=.00005;
   const r=((1.8+strength*4.5)*(.8+intensity*.05)).toFixed(1);
   const op=Math.min(1,.35+strength*.65).toFixed(2);
-  const connCount=svg._dotConnCount||0;
 
-  // Motion template: spline for smooth acceleration
   function makeMotion(el2){
     const m=smil('animateMotion',{dur:`${tc}s`,repeatCount:rep,fill:fz,calcMode:'spline',
       keyTimes:`0; ${t0}; ${t1}; 1`,keyPoints:'0; 0; 1; 1',
@@ -926,11 +925,12 @@ function addDot(svg,ax,ay,bx,by,color,strength,ws,wd,tc){
     const off=eOff||0;
     const a0=Math.max(0,t0-e+off).toFixed(7),a1=Math.min(1,t0+e+off).toFixed(7);
     const b0=Math.max(0,t1-e+off).toFixed(7),b1=Math.min(1,t1+e+off).toFixed(7);
-    el2.appendChild(smil('animate',{attributeName:'opacity',values:`0;0;${opVal};${opVal};0;0`,
-      keyTimes:`0;${a0};${a1};${b0};${b1};1`,dur:`${tc}s`,repeatCount:rep,fill:fz,calcMode:'linear'}));
+    el2.appendChild(smil('animate',{attributeName:'opacity',
+      values:loopAnim?`0;0;${opVal};${opVal};0;0`:`0;0;${opVal};${opVal}`,
+      keyTimes:loopAnim?`0;${a0};${a1};${b0};${b1};1`:`0;${a0};${a1};1`,
+      dur:`${tc}s`,repeatCount:rep,fill:fz,calcMode:'linear'}));
   }
 
-  // Main colored dot (single element for performance)
   const dot=el('circle',{r,fill:color,opacity:'0','pointer-events':'none'});
   makeMotion(dot);
   makeOpacity(dot,op);
@@ -941,35 +941,23 @@ function addFlash(svg,x,y,col,r,ws,wd,tc){
   const dur=wd*.4,t0=+(ws/tc).toFixed(7),tm=+((ws+dur*.5)/tc).toFixed(7),t1=+((ws+dur)/tc).toFixed(7);
   const fo=Math.min(1,.55+intensity*.04).toFixed(2);
   const sp='0 0 1 1;.2 0 .8 1;0 0 1 1;.2 0 .8 1;0 0 1 1';
-  const kt=`0;${t0};${tm};${tm};${t1};1`;
+  const kt=loopAnim?`0;${t0};${tm};${tm};${t1};1`:`0;${t0};${tm};1`;
 
-  // Expanding ripple ring 1
-  const ripple1=el('circle',{cx:x,cy:y,r:r,fill:'none',stroke:col.stroke,'stroke-width':'2.5',opacity:'0','pointer-events':'none',filter:'url(#glow-ripple)'});
-  ripple1.appendChild(smil('animate',{attributeName:'r',values:`${r};${r};${r+25};${r+25};${r+30};${r+30}`,keyTimes:kt,dur:`${tc}s`,repeatCount:rep,fill:fz,calcMode:'spline',keySplines:'0 0 1 1;0 .5 .5 1;0 0 1 1;0 .5 .5 1;0 0 1 1'}));
-  ripple1.appendChild(smil('animate',{attributeName:'opacity',values:`0;0;${(.5*fo).toFixed(2)};${(.35*fo).toFixed(2)};0;0`,keyTimes:kt,dur:`${tc}s`,repeatCount:rep,fill:fz,calcMode:'spline',keySplines:sp}));
-  ripple1.appendChild(smil('animate',{attributeName:'stroke-width',values:'2.5;2.5;1.5;1;0.3;0.3',keyTimes:kt,dur:`${tc}s`,repeatCount:rep,fill:fz}));
-  svg.appendChild(ripple1);
-
-  // Expanding ripple ring 2 (delayed)
-  const t0b=+(Math.min(.98,(ws+dur*.3)/tc)).toFixed(7),tmb=+(Math.min(.99,(ws+dur*.65)/tc)).toFixed(7),t1b=+(Math.min(.999,(ws+dur*1.1)/tc)).toFixed(7);
-  const ktb=`0;${t0b};${tmb};${tmb};${t1b};1`;
-  const ripple2=el('circle',{cx:x,cy:y,r:r,fill:'none',stroke:col.stroke,'stroke-width':'1.5',opacity:'0','pointer-events':'none',filter:'url(#glow-ripple)'});
-  ripple2.appendChild(smil('animate',{attributeName:'r',values:`${r};${r};${r+18};${r+18};${r+22};${r+22}`,keyTimes:ktb,dur:`${tc}s`,repeatCount:rep,fill:fz}));
-  ripple2.appendChild(smil('animate',{attributeName:'opacity',values:`0;0;${(.3*fo).toFixed(2)};${(.2*fo).toFixed(2)};0;0`,keyTimes:ktb,dur:`${tc}s`,repeatCount:rep,fill:fz}));
-  svg.appendChild(ripple2);
-
-  // Soft glow fill
   const ring=el('circle',{cx:x,cy:y,r:r+10,fill:col.fill,opacity:'0','pointer-events':'none',filter:'url(#glow)'});
-  ring.appendChild(smil('animate',{attributeName:'opacity',values:`0;0;${fo};${fo};0;0`,keyTimes:kt,dur:`${tc}s`,repeatCount:rep,fill:fz,calcMode:'spline',keySplines:sp}));
+  ring.appendChild(smil('animate',{attributeName:'opacity',
+    values:loopAnim?`0;0;${fo};${fo};0;0`:`0;0;${fo};${fo}`,
+    keyTimes:kt,dur:`${tc}s`,repeatCount:rep,fill:fz,calcMode:'spline',keySplines:sp}));
   svg.appendChild(ring);
 
-  // Core flash with pop
   const p2=el('circle',{cx:x,cy:y,r:r*.65,fill:col.core,opacity:'0','pointer-events':'none'});
-  p2.appendChild(smil('animate',{attributeName:'opacity',values:'0;0;1;1;0;0',keyTimes:kt,dur:`${tc}s`,repeatCount:rep,fill:fz,calcMode:'spline',keySplines:sp}));
-  p2.appendChild(smil('animate',{attributeName:'r',values:`${(r*.65).toFixed(1)};${(r*.65).toFixed(1)};${(r*.85).toFixed(1)};${(r*.75).toFixed(1)};${(r*.65).toFixed(1)};${(r*.65).toFixed(1)}`,keyTimes:kt,dur:`${tc}s`,repeatCount:rep,fill:fz,calcMode:'spline',keySplines:'0 0 1 1;.3 0 .7 1;0 0 1 1;.3 0 .7 1;0 0 1 1'}));
+  p2.appendChild(smil('animate',{attributeName:'opacity',
+    values:loopAnim?'0;0;1;1;0;0':'0;0;1;1',
+    keyTimes:kt,dur:`${tc}s`,repeatCount:rep,fill:fz,calcMode:'spline',keySplines:sp}));
+  p2.appendChild(smil('animate',{attributeName:'r',
+    values:loopAnim?`${(r*.65).toFixed(1)};${(r*.65).toFixed(1)};${(r*.85).toFixed(1)};${(r*.75).toFixed(1)};${(r*.65).toFixed(1)};${(r*.65).toFixed(1)}` : `${(r*.65).toFixed(1)};${(r*.65).toFixed(1)};${(r*.85).toFixed(1)};${(r*.65).toFixed(1)}`,
+    keyTimes:kt,dur:`${tc}s`,repeatCount:rep,fill:fz,calcMode:'spline',keySplines:'0 0 1 1;.3 0 .7 1;0 0 1 1;.3 0 .7 1;0 0 1 1'.split(';').slice(0,loopAnim?5:4).join(';')}));
   svg.appendChild(p2);
 }
-
 
 function drawOutputNode(svg,x,y,act,col,r,arrivals,tc){
   const iSc=iScale(),flashDur=.15+(1-act)*.3;
@@ -988,30 +976,43 @@ function drawOutputNode(svg,x,y,act,col,r,arrivals,tc){
     const t0=+(arriveAt/tc).toFixed(5);
     const tm=+(Math.min(0.98, rawTm)).toFixed(5);
     const t1=+(Math.min(0.999, rawT1)).toFixed(5);
-    const kt=`0;${Math.max(0,t0-.001).toFixed(5)};${tm};${tm};${t1};1`,sp='.2 0 .8 1;.2 0 .8 1;.2 0 .8 1;.2 0 .8 1;.2 0 .8 1';
+    const kt=loopAnim?`0;${Math.max(0,t0-.001).toFixed(5)};${tm};${tm};${t1};1`:`0;${Math.max(0,t0-.001).toFixed(5)};${tm};1`,
+          sp='.2 0 .8 1;.2 0 .8 1;.2 0 .8 1;.2 0 .8 1;.2 0 .8 1';
 
-    // Expanding ripple ring on output arrival
     const ripple=el('circle',{cx:x,cy:y,r:r,fill:'none',stroke:col.stroke,'stroke-width':'2',opacity:'0','pointer-events':'none',filter:'url(#glow-ripple)'});
-    ripple.appendChild(smil('animate',{attributeName:'r',values:`${r};${r};${r+20+Math.round(act*15)};${r+20+Math.round(act*15)};${r+25+Math.round(act*15)};${r+25+Math.round(act*15)}`,keyTimes:kt,dur:`${tc}s`,repeatCount:rep,fill:fz}));
-    ripple.appendChild(smil('animate',{attributeName:'opacity',values:`0;0;${(.4*act).toFixed(2)};${(.25*act).toFixed(2)};0;0`,keyTimes:kt,dur:`${tc}s`,repeatCount:rep,fill:fz}));
-    ripple.appendChild(smil('animate',{attributeName:'stroke-width',values:'2;2;1;0.5;0.2;0.2',keyTimes:kt,dur:`${tc}s`,repeatCount:rep,fill:fz}));
+    ripple.appendChild(smil('animate',{attributeName:'r',
+      values:loopAnim?`${r};${r};${r+20+Math.round(act*15)};${r+20+Math.round(act*15)};${r+25+Math.round(act*15)};${r+25+Math.round(act*15)}` : `${r};${r};${r+20+Math.round(act*15)};${r+20+Math.round(act*15)}`,
+      keyTimes:kt,dur:`${tc}s`,repeatCount:rep,fill:fz}));
+    ripple.appendChild(smil('animate',{attributeName:'opacity',
+      values:loopAnim?`0;0;${(.4*act).toFixed(2)};${(.25*act).toFixed(2)};0;0` : `0;0;${(.4*act).toFixed(2)};${(.25*act).toFixed(2)}`,
+      keyTimes:kt,dur:`${tc}s`,repeatCount:rep,fill:fz}));
     svg.appendChild(ripple);
 
-    // Halo with bloom expansion
     const halo=el('circle',{cx:x,cy:y,r:r+2,fill:col.fill,opacity:'0','pointer-events':'none',filter:'url(#glow-large)'});
-    halo.appendChild(smil('animate',{attributeName:'r',values:`${r+2};${r+2};${haloR};${haloR};${r+2};${r+2}`,keyTimes:kt,dur:`${tc}s`,repeatCount:rep,fill:fz,calcMode:'spline',keySplines:sp}));
-    halo.appendChild(smil('animate',{attributeName:'opacity',values:`0;0;${peakHalo};${peakHalo};0;0`,keyTimes:kt,dur:`${tc}s`,repeatCount:rep,fill:fz,calcMode:'spline',keySplines:sp}));
+    halo.appendChild(smil('animate',{attributeName:'r',
+      values:loopAnim?`${r+2};${r+2};${haloR};${haloR};${r+2};${r+2}` : `${r+2};${r+2};${haloR};${r+2}`,
+      keyTimes:kt,dur:`${tc}s`,repeatCount:rep,fill:fz,calcMode:'spline',keySplines:sp}));
+    halo.appendChild(smil('animate',{attributeName:'opacity',
+      values:loopAnim?`0;0;${peakHalo};${peakHalo};0;0` : `0;0;${peakHalo};${peakHalo}`,
+      keyTimes:kt,dur:`${tc}s`,repeatCount:rep,fill:fz,calcMode:'spline',keySplines:sp}));
     svg.appendChild(halo);
 
-    // Burst with scale pop
     const burst=el('circle',{cx:x,cy:y,r:(coreR*.6).toFixed(1),fill:col.core,opacity:'0','pointer-events':'none'});
-    burst.appendChild(smil('animate',{attributeName:'r',values:`${(coreR*.6).toFixed(1)};${(coreR*.6).toFixed(1)};${(coreR*1.3).toFixed(1)};${coreR};${(coreR*.6).toFixed(1)};${(coreR*.6).toFixed(1)}`,keyTimes:kt,dur:`${tc}s`,repeatCount:rep,fill:fz,calcMode:'spline',keySplines:sp}));
-    burst.appendChild(smil('animate',{attributeName:'opacity',values:`0;0;${peakBurst};${peakBurst};0;0`,keyTimes:kt,dur:`${tc}s`,repeatCount:rep,fill:fz,calcMode:'spline',keySplines:sp}));
+    burst.appendChild(smil('animate',{attributeName:'r',
+      values:loopAnim?`${(coreR*.6).toFixed(1)};${(coreR*.6).toFixed(1)};${(coreR*1.3).toFixed(1)};${coreR};${(coreR*.6).toFixed(1)};${(coreR*.6).toFixed(1)}` : `${(coreR*.6).toFixed(1)};${(coreR*.6).toFixed(1)};${(coreR*1.3).toFixed(1)};${coreR}`,
+      keyTimes:kt,dur:`${tc}s`,repeatCount:rep,fill:fz,calcMode:'spline',keySplines:sp}));
+    burst.appendChild(smil('animate',{attributeName:'opacity',
+      values:loopAnim?`0;0;${peakBurst};${peakBurst};0;0` : `0;0;${peakBurst};${peakBurst}`,
+      keyTimes:kt,dur:`${tc}s`,repeatCount:rep,fill:fz,calcMode:'spline',keySplines:sp}));
     svg.appendChild(burst);
 
-    // Stroke width pulse on arrival
-    outerNode.appendChild(smil('animate',{attributeName:'stroke-width',values:`2;2;${(2+act*3).toFixed(1)};${(2+act*3).toFixed(1)};2;2`,keyTimes:kt,dur:`${tc}s`,repeatCount:rep,fill:fz,calcMode:'spline',keySplines:sp}));
+    outerNode.appendChild(smil('animate',{attributeName:'stroke-width',
+      values:loopAnim?`2;2;${(2+act*3).toFixed(1)};${(2+act*3).toFixed(1)};2;2` : `2;2;${(2+act*3).toFixed(1)};${(2+act*3).toFixed(1)}`,
+      keyTimes:kt,dur:`${tc}s`,repeatCount:rep,fill:fz,calcMode:'spline',keySplines:sp}));
   }
+}
+
+function drawOutputStats(svg,x,y,act,col,r,arrivals,tc){
   if(arrivals.length>0 && !demoMode){
     const pw=34,bg=el('g',{opacity:'0'});
     bg.appendChild(el('rect',{x:x+r+4,y:y-8.5,width:pw,height:17,rx:'6',fill:isDark?'#0f172a':'#fff',stroke:col.stroke,'stroke-width':'1.5'}));
@@ -1220,21 +1221,34 @@ function drawVehiclePanel(svg,veh,pos,NODE_R,H,tc,nInput,tExt,centerOffset=0){
   const btnY=gridY+GRID_H+15;
   const fo=document.createElementNS(SVG_NS,'foreignObject');
   fo.setAttribute('x',imgX); fo.setAttribute('y',btnY);
-  fo.setAttribute('width',IMG_W); fo.setAttribute('height',30);
-  const btn=document.createElement('button');
-  btn.textContent='Next Image';
-  btn.style.cssText=`width:100%;height:28px;border-radius:7px;border:none;
-    background:#3b82f6;color:#fff;font-size:11px;font-weight:700;
-    cursor:pointer;font-family:Inter,sans-serif;letter-spacing:.03em;
-    transition:background .2s`;
-  btn.onmouseenter=()=>{btn.style.background='#2563eb';};
-  btn.onmouseleave=()=>{btn.style.background='#3b82f6';};
+  fo.setAttribute('width',IMG_W); fo.setAttribute('height',32);
+  
+  const btnBox = document.createElement('div');
+  btnBox.style.cssText = `display:flex; width:100%; height:100%`;
+
+  const btn = document.createElement('button');
+  btn.textContent = 'Next Image';
+  btn.style.cssText = `flex:1; height:28px; border-radius:7px; border:none;
+    background:#334155; color:#fff; font-size:10.5px; font-weight:700;
+    cursor:pointer; font-family:Inter,sans-serif; letter-spacing:.02em;
+    transition:all .2s; border:1px solid rgba(255,255,255,0.1)`;
+  btn.onmouseenter=()=>{btn.style.background='#475569'; btn.style.transform='translateY(-1px)';};
+  btn.onmouseleave=()=>{btn.style.background='#334155'; btn.style.transform='none';};
   btn.onclick=()=>{
-    demoVehicleIdx=(demoVehicleIdx+1)%activeData.length;
-    if(demoType==='mnist') activeData[demoVehicleIdx].currentSample = Math.floor(Math.random()*activeData[demoVehicleIdx].samples.length);
+    if(demoType === 'mnist') {
+      let nextIdx = demoVehicleIdx;
+      while(nextIdx === demoVehicleIdx) {
+        nextIdx = Math.floor(Math.random() * MNIST_DATA.length);
+      }
+      demoVehicleIdx = nextIdx;
+      activeData[demoVehicleIdx].currentSample = Math.floor(Math.random() * activeData[demoVehicleIdx].samples.length);
+    } else {
+      demoVehicleIdx = (demoVehicleIdx + 1) % activeData.length;
+    }
     buildNetwork(false);
   };
-  fo.appendChild(btn);
+  btnBox.appendChild(btn);
+  fo.appendChild(btnBox);
   g.appendChild(fo);
 
   const gridLbl=el('text',{x:gridX+GRID_W/2,y:gridY-12,'text-anchor':'middle','font-family':'Inter,sans-serif','font-size':'11','font-weight':'700',fill:veh.color});
@@ -1463,15 +1477,14 @@ function drawClassPanel(svg,veh,pos,NODE_R,H,tc,tArrRaw){
     const tHold = (t0 + (1.0 - t0) * 0.75).toFixed(5);
     const tFade = (t0 + (1.0 - t0) * 0.92).toFixed(5);
 
-    const gHigh = el('g', {opacity: lineMode==='dynamic' ? '0' : (isW?'1':'0')});
-    if(lineMode==='dynamic' && isW){
-      const opAnim = smil('animate',{
+    const gHigh = el('g', {opacity: lineMode==='dynamic' ? '0' : (isW?'1':'0.45')});
+    if(lineMode==='dynamic'){
+      gHigh.appendChild(smil('animate',{
         attributeName:'opacity',
-        values:loopAnim ? `0;0;1;1;0;0` : `0;0;1;1`,
+        values:loopAnim ? `0;0;${isW?1:0.45};${isW?1:0.45};0;0` : `0;0;${isW?1:0.45};${isW?1:0.45}`,
         keyTimes:loopAnim ? `0;${tA};${tA2};${tHold};${tFade};1` : `0;${tA};${tA2};1`,
         dur:`${tc}s`, repeatCount:rep, fill:fz
-      });
-      gHigh.appendChild(opAnim);
+      }));
     }
 
     const lblBase = el('text',{x:panelX+2,y:y+5,'font-family':'Inter,sans-serif','font-size':'11','font-weight':'500',fill:baseColor});
@@ -1483,31 +1496,20 @@ function drawClassPanel(svg,veh,pos,NODE_R,H,tc,tArrRaw){
     svg.appendChild(el('rect',{x:barX,y:y-5.5,width:BAR_W,height:BAR_H,rx:5.5,fill:isDark?'rgba(30,41,59,.6)':'rgba(203,213,225,.35)'}));
 
     const fillW=Math.max(2,BAR_W*conf);
-    const bf=el('rect',{x:barX,y:y-5.5,width:lineMode==='dynamic'?0:fillW,height:BAR_H,rx:5.5,fill:v2.color});
-    if(lineMode==='dynamic' && isW){
+    const bf=el('rect',{x:barX,y:y-5.5,width:lineMode==='dynamic'?0:fillW,height:BAR_H,rx:5.5,fill:v2.color,opacity:isW?'1':'0.45'});
+    if(lineMode==='dynamic'){
       bf.appendChild(smil('animate',{
         attributeName:'width',
         values:loopAnim ? `0;0;${fillW.toFixed(1)};${fillW.toFixed(1)};0;0` : `0;0;${fillW.toFixed(1)};${fillW.toFixed(1)}`,
         keyTimes:loopAnim ? `0;${tA2};${tA3};${tHold};${tFade};1` : `0;${tA2};${tA3};1`,
         dur:`${tc}s`, repeatCount:rep, fill:fz
       }));
-    } else if (lineMode==='dynamic' && !isW) {
-      bf.appendChild(smil('animate',{
-        attributeName:'width',
-        values:loopAnim ? `0;0;${fillW.toFixed(1)};${fillW.toFixed(1)};0;0` : `0;0;${fillW.toFixed(1)};${fillW.toFixed(1)}`,
-        keyTimes:loopAnim ? `0;${tA2};${tA3};${tHold};${tFade};1` : `0;${tA2};${tA3};1`,
-        dur:`${tc}s`, repeatCount:rep, fill:fz
-      }));
-      bf.setAttribute("opacity", "0.45");
     }
     
-    if (isW) gHigh.appendChild(bf);
-    else svg.appendChild(bf);
-
+    gHigh.appendChild(bf);
     const pct=el('text',{x:barX+BAR_W+7,y:y+4.5,'font-family':'JetBrains Mono,monospace','font-size':'10.5','font-weight':'700',fill:v2.color});
     pct.textContent=(conf*100).toFixed(1)+'%';
     gHigh.appendChild(pct);
-
     svg.appendChild(gHigh);
   });
 }
@@ -2034,6 +2036,7 @@ function buildNetwork(keepWeights=false){
       const{x,y}=pos[li][ni],r=NODE_R;
       if(li===total-1){
         drawOutputNode(svg,x,y,outActs[ni],col,r,lineMode==='dynamic'?arrivals:[],tc);
+        drawOutputStats(svg,x,y,outActs[ni],col,r,lineMode==='dynamic'?arrivals:[],tc);
       } else {
         let outerFill=isDark?col.fill:'#fff',coreFill=col.core,coreOp='.88';
         if(demoMode&&li===0&& ni < (demoType==='mnist'?activeData[demoVehicleIdx].samples[activeData[demoVehicleIdx].currentSample].pixels.length : activeData[demoVehicleIdx].pixels.length)){
@@ -2117,7 +2120,7 @@ function buildNetwork(keepWeights=false){
           if(core.tagName==='circle') gsap.to(core,{attr:{r:r*.44},duration:.45,ease:'elastic.out(1,.5)',overwrite:true});
         });
         svg.appendChild(hn);
-        if(li===0&&lineMode==='dynamic')addFlash(svg,x,y,col,r,0,layerDur*.4,tc);
+  if(li===0&&lineMode==='dynamic') addFlash(svg,x,y,col,r,0,layerDur*.4,tc);
       }
     }
   }
