@@ -598,7 +598,7 @@
       }
       .ui.ui-left .title-wrap {
         width: auto;
-        max-width: 52%;
+        max-width: 45%; /* Narrowed to avoid the diagram */
         text-align: left;
         align-items: flex-start;
       }
@@ -628,11 +628,11 @@
       .title {
         font-family: var(--font-heading);
         font-weight: 800;
-        font-size: clamp(60px, 10vw, 150px);
+        font-size: clamp(48px, 8.5vw, 130px); /* Slightly smaller maximums helpful for layout */
         line-height: 0.98;
         letter-spacing: -3px;
         margin: 0;
-        white-space: nowrap;
+        white-space: normal; /* Allow wrap if necessary on very small desktop views */
         position: relative;
       }
       /* Subtle ambient glow behind the title */
@@ -4446,7 +4446,7 @@
         </div>
 
         <!-- Slide counter — top right -->
-        <div class="hero-slide-num">01 &nbsp;/&nbsp; 07</div>
+        <div class="hero-slide-num">01 &nbsp;/&nbsp; 08</div>
       </section>
 
       <!-- SLIDE 02: HISTORICAL CONTEXT (DARTMOUTH 1956) -->
@@ -4740,11 +4740,19 @@
                   <path d="M21 9V7h-2V5c0-1.1-.9-2-2-2H7c-1.1 0-2 .9-2 2v2H3v2h2v2H3v2h2v2H3v2h2v2c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2v-2h2v-2h-2v-2h2v-2h-2V9h2zm-4 10H7V5h10v14zM9 7h6v2H9V7zm0 4h6v2H9v-2zm0 4h6v2H9v-2z"/>
                 </svg>
                 <div class="s4-detail-title">GPU Power</div>
-                <button class="gpu-demo-btn gpu-demo-icon-btn" onclick="openGpuDemo()" title="GPU Illustration">
-                  <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M6 6h12v12H6V6m-2-2v16h16V4H4zm8-2h-2v2h2V2zm4 0h-2v2h2V2zM8 2H6v2h2V2zM2 10v2h2v-2H2zm0 4v2h2v-2H2zM2 6v2h2V6H2zm18 4v2h2v-2h-2zm0 4v2h2v-2h-2zm0-8v2h2V6h-2zm-6 14h2v2h-2v-2zm-4 0h2v2h-2v-2zm-4 0h2v2H6v-2z"/>
-                  </svg>
-                </button>
+                <div style="margin-left: auto; display: flex; gap: 10px;">
+                  <button class="gpu-demo-btn gpu-demo-icon-btn" onclick="openGpuDemo()" title="GPU Illustration" style="margin-left: 0;">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M6 6h12v12H6V6m-2-2v16h16V4H4zm8-2h-2v2h2V2zm4 0h-2v2h2V2zM8 2H6v2h2V2zM2 10v2h2v-2H2zm0 4v2h2v-2H2zM2 6v2h2V6H2zm18 4v2h2v-2h-2zm0 4v2h2v-2h-2zm0-8v2h2V6h-2zm-6 14h2v2-h-2v-2zm-4 0h2v2h-2v-2zm-4 0h2v2H6v-2z"/>
+                    </svg>
+                  </button>
+                  <button class="gpu-demo-btn gpu-demo-icon-btn" onclick="openCpuGpuComparison()" title="CPU vs GPU Comparison" style="margin-left: 0; background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5cc0-1.1-.9-2-2-2zm-1 14H6V7h12v10z"/>
+                      <path d="M12 9h4v2h-4V9zm-4 0h2v2H8V9zm0 4h2v2H8v-2zm4 0h4v2h-4v-2z"/>
+                    </svg>
+                  </button>
+                </div>
               </div>
               <div class="s4-detail-body">
                 <span class="s4-detail-highlight">From Gaming to AI</span>
@@ -5008,6 +5016,31 @@
       </div>
     </div>
 
+    <!-- CPU vs GPU Comparison Popup -->
+    <div class="cgd-overlay" id="cpuGpuComparisonOverlay" style="display:none;">
+      <div class="cgd-modal" style="max-width: 900px; height: 80vh; overflow-y: auto;">
+        <button class="cgd-close" onclick="closeCpuGpuComparison()">&times;</button>
+        <div class="cgd-header-row">
+          <div class="cgd-title">CPU vs GPU Comparison</div>
+        </div>
+        <div class="cgd-subtitle">Architectural Differences & Performance Benchmarks</div>
+        
+        <div style="padding: 60px 40px; text-align: center;">
+          <div style="font-size: 24px; color: var(--s2-gold); font-family: var(--font-heading); margin-bottom: 20px; font-weight: 700;">
+            Comparison Dashboard Coming Soon
+          </div>
+          <p style="color: var(--text-dim); max-width: 600px; margin: 0 auto; line-height: 1.6;">
+            This section will showcase a detailed side-by-side comparison between CPU and GPU architectures, including throughput metrics, core counts, and typical AI workload performance.
+          </p>
+          <div style="margin-top: 40px; display: inline-flex; gap: 20px; align-items: center; opacity: 0.5;">
+            <div style="width: 100px; height: 100px; border: 2px dashed var(--text-dim); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 32px;">💻</div>
+            <div style="font-size: 24px;">VS</div>
+            <div style="width: 100px; height: 100px; border: 2px dashed var(--accent-main); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 32px;">🔋</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ── 12. SCRIPTS & LOGIC ─────────────────────────────────────────────── -->
     <script>
       /* ── A. CORE CANVAS ENGINE & BRAIN ANIMATION ── */
@@ -5022,15 +5055,16 @@
         BH = window.innerHeight;
         bc.width = BW * r;
         bc.height = BH * r;
-        // Use setTransform to reset the scale absolutely, avoiding cumulative scaling bugs
         bx.setTransform(r, 0, 0, r, 0, 0);
+        
+        // Reset all background initializations to force recalculation of positions
+        dualInited = false;
+        synapseNodes = []; nexusNodes = []; streamParticles = []; 
+        stormNodes = []; ballNodes = []; annNodes = [];
+        
         buildBrain();
       }
-      // Delay initial buildBrain until everything is laid out
-      setTimeout(() => {
-        resizeBrain();
-        buildBrain();
-      }, 50);
+      setTimeout(resizeBrain, 50);
 
       let nodes = [],
         edges = [];
@@ -5480,12 +5514,11 @@
         const layers = isMobile ? [3, 4, 3] : [3, 5, 5, 3];
         dualAnnLayerCount = layers.length;
         
-        // ANN occupies the right 45% of the screen
-        const annLeft = isMobile ? BW * 0.58 : BW * 0.60;
-        const annRight = BW * 0.94;
+        const annLeft = isMobile ? BW * 0.60 : BW * 0.68; // More clearance for title
+        const annRight = isMobile ? BW * 0.96 : BW * 0.95;
         const totalW = annRight - annLeft;
         const spacingX = totalW / (layers.length - 1);
-        const nodeSpacingY = isMobile ? 48 : 58;
+        const nodeSpacingY = isMobile ? 42 : 54;
 
         layers.forEach((count, li) => {
           const totalH = (count - 1) * nodeSpacingY;
@@ -5711,12 +5744,12 @@
       function initAnn() {
         annNodes = []; annPulses = []; annParticles = [];
         const isMobile = BW < 768;
-        const layers = isMobile ? [3, 5, 5, 3] : [3, 5, 7, 5, 3];
+        const layers = isMobile ? [3, 4, 3] : [3, 5, 7, 5, 3];
         annLayerCount = layers.length;
-        const totalW = isMobile ? BW * 0.65 : BW * 0.50;
+        const totalW = isMobile ? BW * 0.70 : BW * 0.48;
         const spacingX = totalW / (layers.length - 1);
-        const startX = (BW - totalW) / 2;
-        const nodeSpacingY = isMobile ? 55 : 68;
+        const startX = isMobile ? (BW - totalW)/2 : (BW * 0.68 - totalW/2); // Center on right half
+        const nodeSpacingY = isMobile ? 48 : 64;
         
         layers.forEach((count, li) => {
           const totalH = (count - 1) * nodeSpacingY;
@@ -6662,6 +6695,13 @@
         resetSideDemo("gpu");
         document.getElementById("speedupVal").textContent = "—";
       }
+
+      function openCpuGpuComparison() {
+        document.getElementById('cpuGpuComparisonOverlay').style.display = 'flex';
+      }
+      function closeCpuGpuComparison() {
+        document.getElementById('cpuGpuComparisonOverlay').style.display = 'none';
+      }
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
@@ -6890,19 +6930,10 @@
         const progress = ((index + 1) / activeSlides.length) * 100;
         document.getElementById("slideCounter").innerText = `${index + 1} / ${activeSlides.length}`;
 
-
         updateNavigationButtons();
         renderQuickNav();
       }
 
-      function updateNavigationButtons() {
-        const activeSlides = getActiveSlides();
-        document.getElementById("prevBtn").disabled = currentSlideIdx === 0;
-        document.getElementById("nextBtn").disabled = currentSlideIdx === activeSlides.length - 1;
-      }
-
-      document.getElementById("prevBtn").addEventListener("click", () => goToSlide(currentSlideIdx - 1));
-      document.getElementById("nextBtn").addEventListener("click", () => goToSlide(currentSlideIdx + 1));
 
       // Scroll listener returned with debounce protection
       // REMOVED slide-change-on-scroll to allow vertical scrolling within slides
@@ -7293,6 +7324,15 @@
           setTimeout(() => el.classList.add('s8-visible'), delay);
         });
       }
+
+      function updateNavigationButtons() {
+        const activeSlides = getActiveSlides();
+        document.getElementById("prevBtn").disabled = currentSlideIdx === 0;
+        document.getElementById("nextBtn").disabled = currentSlideIdx === activeSlides.length - 1;
+      }
+
+      document.getElementById("prevBtn").addEventListener("click", () => goToSlide(currentSlideIdx - 1));
+      document.getElementById("nextBtn").addEventListener("click", () => goToSlide(currentSlideIdx + 1));
 
       // Init dynamic nav components
       renderQuickNav();

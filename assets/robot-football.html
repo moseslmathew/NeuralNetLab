@@ -150,25 +150,6 @@
     gap: 10px;
     box-shadow: var(--shadow);
   }
-  #scoreboard {
-    display: flex;
-    gap: 30px;
-    align-items: center;
-  }
-  .score {
-    font-size: 20px;
-    font-weight: 800;
-    padding: 6px 24px;
-    border-radius: 8px;
-    letter-spacing: 1px;
-    min-width: 120px;
-    text-align: center;
-    border: 1px solid var(--border-ui);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  }
-  .score.red { background: rgba(231, 76, 60, 0.15); color: #e74c3c; border-color: rgba(231, 76, 60, 0.3); }
-  .score.blue { background: rgba(52, 152, 219, 0.15); color: #3498db; border-color: rgba(52, 152, 219, 0.3); }
-  .score-sep { color: var(--text-dim); font-weight: 800; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; }
   canvas#field {
     border-radius: 10px;
     box-shadow: 0 0 50px #00000088;
@@ -512,6 +493,26 @@
     color: #ffffff55;
   }
   #speed-control input { width: 90px; accent-color: #4a9eff; }
+  #restart-btn {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: all 0.2s;
+  }
+  #restart-btn:hover {
+    background: rgba(245, 158, 11, 0.3);
+    border-color: #f59e0b;
+    transform: scale(1.1);
+  }
+
   #pause-btn {
     width: 28px; height: 28px;
     border-radius: 50%;
@@ -548,74 +549,6 @@
   .legend-dot { width: 9px; height: 9px; border-radius: 50%; }
 
   /* --- Theory Section --- */
-  #theory-section {
-    width: 100%;
-    max-width: 1100px;
-    margin: 40px auto 80px; /* added substantial bottom margin */
-    padding: 0 16px;
-  }
-  .theory-title {
-    font-size: 14px;
-    color: var(--accent);
-    text-transform: uppercase;
-    letter-spacing: 3px;
-    font-weight: 800;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .theory-title::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, var(--border-ui), transparent);
-  }
-  .theory-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 20px;
-  }
-  .theory-card {
-    background: var(--bg-panel);
-    border: 1px solid var(--border-ui);
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: var(--shadow);
-  }
-  .theory-card h3 {
-    font-size: 12px;
-    color: var(--text-bright);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .theory-card h3 .step {
-    width: 20px;
-    height: 20px;
-    background: var(--accent-glow);
-    border: 1px solid var(--accent);
-    color: var(--accent);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    font-weight: 800;
-  }
-  .theory-card p {
-    font-size: 14px;
-    line-height: 1.6;
-    color: var(--text-bright);
-    opacity: 0.85;
-  }
-  .theory-card b {
-    color: var(--accent);
-    font-weight: 700;
-  }
 </style>
 </head>
 <body>
@@ -702,13 +635,9 @@
   <!-- Right: Field -->
   <div id="right-content">
     <div id="field-wrap">
-      <div id="scoreboard">
-        <div class="score red" id="scoreRed">RED 0</div>
-        <div class="score-sep">vs</div>
-        <div class="score blue" id="scoreBlue">BLUE 0</div>
-      </div>
       <canvas id="field"></canvas>
       <div id="speed-control">
+        <button id="restart-btn" onclick="restartSimulation()" title="Restart Football">🔄</button>
         <button id="pause-btn" onclick="togglePause()" title="Pause / Resume">⏸︎</button>
         <span>Cycle speed:</span>
         <input type="range" min="0.3" max="2" step="0.1" value="1.1" id="speedSlider" autocomplete="off">
@@ -719,32 +648,6 @@
 
 </div>
 
-<!-- Learning Theory Section -->
-<div id="theory-section">
-  <div class="theory-title">The Science of Robot Learning</div>
-  
-  <div class="theory-grid">
-    <div class="theory-card">
-      <h3><span class="step">1</span> Experience</h3>
-      <p>Instead of manual programming, the robot learns through <b>Experience</b>. At first, it doesn't know what actions are good or bad. It simply tries moving, passing, or shooting and observes the outcome.</p>
-    </div>
-
-    <div class="theory-card">
-      <h3><span class="step">2</span> Feedback</h3>
-      <p>Every move result in a <b>Reinforcement Signal</b>. Good outcomes (scoring) trigger positive rewards, while poor results (missing) assign negative penalties. This is how the robot learns "value".</p>
-    </div>
-
-    <div class="theory-card">
-      <h3><span class="step">3</span> Rewiring</h3>
-      <p>The robot uses <b>Backpropagation</b> to update its internal neural connections. It strengthens the weights that led to high rewards and weakens those that caused errors, effectively "rewiring" its brain.</p>
-    </div>
-
-    <div class="theory-card">
-      <h3><span class="step">4</span> Strategy</h3>
-      <p>Through billions of weight updates, the robot moves from random movement to <b>Complex Strategy</b>. It stops looking at individual kicks and starts recognizing patterns that maximize its success.</p>
-    </div>
-  </div>
-</div>
 
 <script>
 // ======================== CANVAS SETUP ========================
@@ -797,8 +700,8 @@ const GOAL_W = H * 0.32;
 const GOAL_D = 16;
 const REST = 0.6;
 
-let scoreRed = 0, scoreBlue = 0;
 let goalFlash = 0, goalFlashColor = '';
+let goalCountedThisFrame = false; // Prevent multiple goal counts for same ball
 let particles = [];
 let epoch = 0;
 let selectedRobot = 0;
@@ -970,6 +873,7 @@ function resetAfterGoal() {
   robots[0].x = W * 0.25; robots[0].y = H * 0.5;
   robots[1].x = W * 0.75; robots[1].y = H * 0.5;
   robots.forEach(r => { r.vx = 0; r.vy = 0; });
+  goalCountedThisFrame = false; // Reset flag for next goal
 }
 
 // ======================== REWARD SYSTEM ========================
@@ -1315,12 +1219,16 @@ function robotThink(r) {
 
 // ======================== GOALS ========================
 function checkGoals() {
+  // Prevent multiple goal counts for the same ball in goal zone
+  if (goalCountedThisFrame) {
+    return false;
+  }
+
   const gt = (H - GOAL_W) / 2;
   const gb = gt + GOAL_W;
   if (ball.y > gt && ball.y < gb) {
     if (ball.x - ball.r <= GOAL_D) {
-      scoreBlue++;
-      document.getElementById('scoreBlue').textContent = 'BLUE ' + scoreBlue;
+      goalCountedThisFrame = true;
       goalFlash = 40; goalFlashColor = '#3498db';
       spawnParticles(ball.x, ball.y, '#3498db', 25);
       // Reward blue team, penalize red team
@@ -1332,8 +1240,7 @@ function checkGoals() {
       return true;
     }
     if (ball.x + ball.r >= W - GOAL_D) {
-      scoreRed++;
-      document.getElementById('scoreRed').textContent = 'RED ' + scoreRed;
+      goalCountedThisFrame = true;
       goalFlash = 40; goalFlashColor = '#e74c3c';
       spawnParticles(ball.x, ball.y, '#e74c3c', 25);
       robots.forEach(r => {
@@ -1349,6 +1256,7 @@ function checkGoals() {
 
 // ======================== UPDATE ========================
 function update() {
+  goalCountedThisFrame = false; // Reset goal flag at start of each frame
   robots.forEach(r => robotThink(r));
 
   robots.forEach(r => {
@@ -1887,6 +1795,45 @@ function togglePause() {
   btn.textContent = paused ? '▶' : '⏸︎';
   btn.classList.toggle('playing', paused);
   btn.title = paused ? 'Resume' : 'Pause';
+}
+
+function restartSimulation() {
+  // Reset epoch
+  epoch = 0;
+  document.getElementById('epoch-counter').textContent = 'Epoch: 0';
+
+  // Reset robots with fresh neural networks and positions
+  robots.forEach((r, idx) => {
+    r.nn = createNN();
+    r.vx = 0;
+    r.vy = 0;
+    r.x = idx === 0 ? W * 0.25 : W * 0.75;
+    r.y = H * 0.5;
+  });
+
+  // Reset ball
+  ball.x = W / 2;
+  ball.y = H / 2;
+  ball.vx = 0;
+  ball.vy = 0;
+  ball.trail = [];
+
+  // Reset other state variables
+  goalFlash = 0;
+  goalFlashColor = '';
+  goalCountedThisFrame = false;
+  cumulativeReward = [0, 0];
+  particles = [];
+  paused = false;
+
+  // Update pause button state
+  const pauseBtn = document.getElementById('pause-btn');
+  pauseBtn.textContent = '⏸︎';
+  pauseBtn.classList.remove('playing');
+  pauseBtn.title = 'Pause / Resume';
+
+  // Visual feedback - golden particles at center
+  spawnParticles(W/2, H/2, '#f59e0b', 40);
 }
 
 function loop() {
